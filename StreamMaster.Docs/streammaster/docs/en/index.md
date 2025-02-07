@@ -44,7 +44,7 @@ This wiki is dedicated to providing information and resources for **StreamMaster
 Need help with **StreamMaster**? Here are a few ways to get assistance:
 
 - Join the conversation on our [Discord server](https://discord.gg/gFz7EtHhG2) 📞
-- Report bugs or request features on our [GitHub Issues](https://github.com/SenexCrenshaw/StreamMaster/issues) 🛠️
+- Report bugs or request features on our [GitHub Issues](https://github.com/carlreid/StreamMaster/issues) 🛠️
 
 ---
 

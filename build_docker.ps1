@@ -33,7 +33,7 @@ function Main {
 
     # DownloadFiles
 
-    $imageName = "docker.io/senexcrenshaw/streammaster"
+    $imageName = "docker.io/carlreid/streammaster"
     $buildName = "streammaster-builds"
 
     $result = Get-AssemblyInfo -assemblyInfoPath "./StreamMaster.API/AssemblyInfo.cs"

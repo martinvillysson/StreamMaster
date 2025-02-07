@@ -1,5 +1,7 @@
+> **NOTICE**: This repository is a decoupled fork from /SenexCrenshaw/StreamMaster, created after the upstream source code was revoked.
+
 <p align="center" width="100%">
-    <img  src="https://raw.githubusercontent.com/SenexCrenshaw/StreamMaster/refs/heads/main/streammasterwebui/public/images/streammaster_logo.png" alt="StreamMaster Logo"/>
+    <img  src="https://raw.githubusercontent.com/carlreid/StreamMaster/refs/heads/main/streammasterwebui/public/images/streammaster_logo.png" alt="StreamMaster Logo"/>
     <H1 align="center" width="100%">Welcome to StreamMaster</H1>
 </p>
 
@@ -10,10 +12,10 @@ StreamMaster, the premier video proxy streaming platform.
 [![Sponsor this project](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink)](https://www.patreon.com/user?u=52683080)
 
 Please go to the wiki for further details and installation instructions.
-[New docs](https://senexcrenshaw.github.io/StreamMaster/)
+[New docs](https://carlreid.github.io/StreamMaster/)
 
 Old Docs
-[Stream Master Wiki](https://github.com/SenexCrenshaw/StreamMaster/wiki)
+[Stream Master Wiki](https://github.com/carlreid/StreamMaster/wiki)
 
 ## Features
 
@@ -35,4 +37,4 @@ Old Docs
 
 - **And much more!** With new features and updates being added all the time, StreamMaster is constantly evolving to meet the needs of today's streamers and content creators.
 
-Docker Repo: [Stream Master Docker IO](https://hub.docker.com/r/senexcrenshaw/streammaster)
+Docker Repo: [Stream Master Docker IO](https://hub.docker.com/r/carlreid/streammaster)
