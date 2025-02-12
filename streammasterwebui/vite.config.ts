@@ -41,7 +41,7 @@ export default defineConfig({
     }
   },
   clearScreen: true,
-  plugins: [react(), visualizer()],
+  plugins: [react(), visualizer(), viteCompression()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname),
