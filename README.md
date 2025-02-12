@@ -1,6 +1,14 @@
 > **NOTICE**: This repository is a decoupled fork from /SenexCrenshaw/StreamMaster, created after the upstream source code was revoked.
 
-## Update 2025-02-12:
+## Update 2: 2025-02-12:
+
+I've managed to get a build working, where you can find a release at `ghcr.io/carlreid/streammaster:latest` ([view it here](https://github.com/carlreid/StreamMaster/pkgs/container/streammaster)).
+
+As such, replace your exiting `senexcrenshaw/streammaster` reference to `ghcr.io/carlreid/streammaster`. This is of course then built from the source code in this repository.
+
+I have no idea how far behind or not the code is in this repo, though the UI states version `0.17.9` in the bottom left.
+
+## Update 1: 2025-02-12:
 
 It seems that everything relating to StreamMaster has mysteriously vanished. I have no idea, however [a Reddit thread](https://www.reddit.com/r/PleX/comments/1indw17/streammaster_no_longer_available/) has some discussion on it.
 
@@ -48,4 +56,4 @@ Old Docs
 
 - **And much more!** With new features and updates being added all the time, StreamMaster is constantly evolving to meet the needs of today's streamers and content creators.
 
-Docker Repo: [Stream Master Docker IO](https://hub.docker.com/r/carlreid/streammaster)
+Docker Repo: [Stream Master Docker IO](https://github.com/carlreid/StreamMaster/pkgs/container/streammaster)
