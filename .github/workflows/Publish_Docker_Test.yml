@@ -6,7 +6,7 @@ permissions:
   contents: read
 
 env:
-  REGISTRY_IMAGE: senexcrenshaw/streammaster
+  REGISTRY_IMAGE: ghcr.io/carlreid/streammaster:latest
 
 jobs:
   build:
