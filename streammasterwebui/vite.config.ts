@@ -44,10 +44,10 @@ export default defineConfig({
   plugins: [react(), visualizer()],
   resolve: {
     alias: {
-      '@': path.resolve('./'),
-      '@components': path.resolve('./components/'),
-      '@features': path.resolve('./features/'),
-      '@lib': path.resolve('./lib/')
+      '@': path.resolve(__dirname),
+      '@components': path.resolve(__dirname, 'components'),
+      '@features': path.resolve(__dirname, 'features'),
+      '@lib': path.resolve(__dirname, 'lib')
     }
   }
 });
