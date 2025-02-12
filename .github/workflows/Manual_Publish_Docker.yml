@@ -1,174 +1,117 @@
-name: Manual Publish Docker Latest
+name: Build and Publish Docker Images
+
 on:
   workflow_dispatch:
+    inputs:
+      build_all:
+        description: 'Build all steps (includes main build unless skipped)'
+        type: boolean
+        default: false
+      build_base:
+        description: 'Build base image'
+        type: boolean
+        default: false
+      build_build:
+        description: 'Build build image'
+        type: boolean
+        default: false
+      build_sm:
+        description: 'Build SM image'
+        type: boolean
+        default: false
+      skip_release_main_build:
+        description: 'Skip release of a main build'
+        type: boolean
+        default: false
+      release_as_latest:
+        description: 'Release as latest'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
+  packages: write
 
 env:
-  REGISTRY_IMAGE: senexcrenshaw/streammaster
+  REGISTRY: ghcr.io
+  BASE_IMAGE_NAME: ${{ github.repository_owner }}/streammaster-builds
+  FINAL_IMAGE_NAME: ${{ github.repository_owner }}/streammaster
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.gitversion.outputs.semVer }}
+      branchName: ${{ steps.gitversion.outputs.branchName }}
+      buildMeta: ${{ steps.gitversion.outputs.buildMetadata }}
+      build_base: ${{ inputs.build_base || inputs.build_all }}
+      build_build: ${{ inputs.build_build || inputs.build_all }}
+      build_sm: ${{ inputs.build_sm || inputs.build_all }}
+      skip_release_main_build: ${{ inputs.skip_release_main_build }}
+      release_as_latest: ${{ inputs.release_as_latest }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: "5.x"
+
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0
+
   build:
+    needs: setup
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
+    env:
+      VERSION: ${{ needs.setup.outputs.version }}
+      BRANCH_NAME: ${{ needs.setup.outputs.branchName }}
+      BUILD_BASE: ${{ needs.setup.outputs.build_base }}
+      BUILD_BUILD: ${{ needs.setup.outputs.build_build }}
+      BUILD_SM: ${{ needs.setup.outputs.build_sm }}
+      SKIP_RELEASE_MAIN_BUILD: ${{ needs.setup.outputs.skip_release_main_build }}
+      RELEASE_AS_LATEST: ${{ needs.setup.outputs.release_as_latest }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0
-        with:
-          versionSpec: "5.x"
-
-      - name: Determine Version
-        uses: gittools/actions/gitversion/execute@v0
-        with:
-          useConfigFile: true
-          updateAssemblyInfo: true
-          targetPath: StreamMasterAPI
-
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY_IMAGE }}
-          tags: |
-            latest
-            ${{ env.GitVersion_SemVer }}
-            ${{ env.GitVersion_SemVer }}-${{ env.GitVersion_BuildMetaDataPadded }}
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Login to Docker Hub
+      - name: Login to GHCR
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push by digest
-        id: build
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          platforms: ${{ matrix.platform }}
-          labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
-
-      - name: Export digest
+      - name: Base - Build and Push
+        if: ${{ env.BUILD_BASE == 'true' }}
         run: |
-          mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          docker buildx build --platform linux/amd64,linux/arm64 -t ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ env.VERSION }}-base -f Dockerfile.base --push .
 
-      - name: Upload digest
-        uses: actions/upload-artifact@v3
-        with:
-          name: digests
-          path: /tmp/digests/*
-          if-no-files-found: error
-          retention-days: 1
-
-  merge:
-    runs-on: ubuntu-latest
-    needs:
-      - build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0
-        with:
-          versionSpec: "5.x"
-
-      - name: Determine Version
-        uses: gittools/actions/gitversion/execute@v0
-        with:
-          useConfigFile: true
-          updateAssemblyInfo: true
-          targetPath: StreamMasterAPI
-
-      - name: Download digests
-        uses: actions/download-artifact@v3
-        with:
-          name: digests
-          path: /tmp/digests
-
-      - name: Display GitVersion variables
+      - name: Build - Build and Push
+        if: ${{ env.BUILD_BUILD == 'true' }}
         run: |
-          echo "Major: ${{ env.GitVersion_Major }}"
-          echo "Minor: ${{ env.GitVersion_Minor }}"
-          echo "Patch: ${{ env.GitVersion_Patch }}"
-          echo "PreReleaseTag: ${{ env.GitVersion_PreReleaseTag }}"
-          echo "PreReleaseTagWithDash: ${{ env.GitVersion_PreReleaseTagWithDash }}"
-          echo "PreReleaseLabel: ${{ env.GitVersion_PreReleaseLabel }}"
-          echo "PreReleaseNumber: ${{ env.GitVersion_PreReleaseNumber }}"
-          echo "WeightedPreReleaseNumber: ${{ env.GitVersion_WeightedPreReleaseNumber }}"
-          echo "BuildMetaData: ${{ env.GitVersion_BuildMetaData }}"
-          echo "BuildMetaDataPadded: ${{ env.GitVersion_BuildMetaDataPadded }}"
-          echo "FullBuildMetaData: ${{ env.GitVersion_FullBuildMetaData }}"
-          echo "MajorMinorPatch: ${{ env.GitVersion_MajorMinorPatch }}"
-          echo "SemVer: ${{ env.GitVersion_SemVer }}"
-          echo "LegacySemVer: ${{ env.GitVersion_LegacySemVer }}"
-          echo "LegacySemVerPadded: ${{ env.GitVersion_LegacySemVerPadded }}"
-          echo "AssemblySemVer: ${{ env.GitVersion_AssemblySemVer }}"
-          echo "AssemblySemFileVer: ${{ env.GitVersion_AssemblySemFileVer }}"
-          echo "FullSemVer: ${{ env.GitVersion_FullSemVer }}"
-          echo "InformationalVersion: ${{ env.GitVersion_InformationalVersion }}"
-          echo "BranchName: ${{ env.GitVersion_BranchName }}"
-          echo "EscapedBranchName: ${{ env.GitVersion_EscapedBranchName }}"
-          echo "Sha: ${{ env.GitVersion_Sha }}"
-          echo "ShortSha: ${{ env.GitVersion_ShortSha }}"
-          echo "NuGetVersionV2: ${{ env.GitVersion_NuGetVersionV2 }}"
-          echo "NuGetVersion: ${{ env.GitVersion_NuGetVersion }}"
-          echo "NuGetPreReleaseTagV2: ${{ env.GitVersion_NuGetPreReleaseTagV2 }}"
-          echo "NuGetPreReleaseTag: ${{ env.GitVersion_NuGetPreReleaseTag }}"
-          echo "VersionSourceSha: ${{ env.GitVersion_VersionSourceSha }}"
-          echo "CommitsSinceVersionSource: ${{ env.GitVersion_CommitsSinceVersionSource }}"
-          echo "CommitsSinceVersionSourcePadded: ${{ env.GitVersion_CommitsSinceVersionSourcePadded }}"
-          echo "UncommittedChanges: ${{ env.GitVersion_UncommittedChanges }}"
-          echo "CommitDate: ${{ env.GitVersion_CommitDate }}"
+          docker buildx build --platform linux/amd64,linux/arm64 -t ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ env.VERSION }}-build -f Dockerfile.build --push .
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY_IMAGE }}
-          tags: |
-            latest
-            ${{ env.GitVersion_SemVer }}
-            ${{ env.GitVersion_SemVer }}-${{ env.GitVersion_BuildMetaDataPadded }}
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and Push Image
-        working-directory: /tmp/digests
+      - name: SM - Build and Push
+        if: ${{ env.BUILD_SM == 'true' }}
         run: |
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-             $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)
+          set -e
+          echo "FROM --platform=\$BUILDPLATFORM ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ env.VERSION }}-build AS build" > Dockerfile.sm
+          cat Dockerfile.sm.template >> Dockerfile.sm
+          docker buildx build --platform linux/amd64,linux/arm64 -t ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ env.VERSION }}-sm -f Dockerfile.sm --push .
 
-      - name: Inspect image
+      - name: Final - Build and Push
+        if: ${{ env.SKIP_RELEASE_MAIN_BUILD != 'true' }}
         run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}
+          set -e
+          echo "FROM ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ env.VERSION }}-sm AS sm" > Dockerfile
+          echo "FROM ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ env.VERSION }}-base AS base" >> Dockerfile
+          cat Dockerfile.template >> Dockerfile
+          docker buildx build --platform linux/amd64,linux/arm64 -t ${{ env.REGISTRY }}/${{ env.FINAL_IMAGE_NAME }}:${{ env.VERSION }} -t ${{ env.REGISTRY }}/${{ env.FINAL_IMAGE_NAME }}:${{ env.RELEASE_AS_LATEST == 'true' && 'latest' || env.BRANCH_NAME }} -f Dockerfile --push .
