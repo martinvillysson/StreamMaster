@@ -1,11 +1,22 @@
 > **NOTICE**: This repository is a decoupled fork from /SenexCrenshaw/StreamMaster, created after the upstream source code was revoked.
 
+## Update 2025-02-12:
+
+It seems that everything relating to StreamMaster has mysteriously vanished. I have no idea, however [a Reddit thread](https://www.reddit.com/r/PleX/comments/1indw17/streammaster_no_longer_available/) has some discussion on it.
+
+`/u/EFletch79` managed to grab the following Discord message:  
+<img src="2025-02-12.png" width="600" />
+
+Those looking for an alternative could check out [Threadfin](https://github.com/Threadfin/Threadfin).
+
+---
+
+## Original README
+
 <p align="center" width="100%">
     <img  src="https://raw.githubusercontent.com/carlreid/StreamMaster/refs/heads/main/streammasterwebui/public/images/streammaster_logo.png" alt="StreamMaster Logo"/>
     <H1 align="center" width="100%">Welcome to StreamMaster</H1>
 </p>
-
----
 
 StreamMaster, the premier video proxy streaming platform.
 
