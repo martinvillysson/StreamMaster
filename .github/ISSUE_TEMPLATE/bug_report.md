@@ -3,7 +3,6 @@ name: Bug Report
 about: Please do not use bug reports for support issues.
 title: 'Bug: '
 labels: 'status:not-yet-viewed, bug'
-assignees: 'senexcrenshaw'
 
 ---
 

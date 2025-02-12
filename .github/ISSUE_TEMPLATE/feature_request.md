@@ -3,7 +3,6 @@ name: Feature Request
 about: Suggest a new feature for Stream Master.
 title: 'Feature Request: '
 labels: 'status:not-yet-viewed, enhancement'
-assignees: 'senexcrenshaw'
 
 ---
 
