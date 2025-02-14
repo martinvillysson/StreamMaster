@@ -4,6 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using StreamMaster.Domain.Helpers;
+using StreamMaster.Domain.Repository;
+using StreamMaster.Infrastructure.Authentication;
+using StreamMaster.Infrastructure.EF.Repositories;
 using StreamMaster.Infrastructure.Logger;
 using StreamMaster.Infrastructure.Middleware;
 using StreamMaster.Infrastructure.Services;
@@ -17,17 +20,19 @@ public static class ConfigureServices
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
-        _ = services.AddMemoryCache();
+        services.AddMemoryCache();
 
-        _ = services.AddSingleton<ILogoService, LogoService>();
-        _ = services.AddSingleton<IImageDownloadQueue, ImageDownloadQueue>();
-        _ = services.AddSingleton<ICacheableSpecification, CacheableSpecification>();
-        _ = services.AddSingleton<IJobStatusService, JobStatusService>();
-        _ = services.AddSingleton<IEPGHelper, EPGHelper>();
-        _ = services.AddSingleton<IFileLoggingServiceFactory, FileLoggingServiceFactory>();
-        _ = services.AddSingleton<IMessageService, MessageService>();
-        _ = services.AddSingleton<IDataRefreshService, DataRefreshService>();
-        _ = services.AddSingleton<IFileUtilService, FileUtilService>();
+        services.AddScoped<IAPIKeyService, APIKeyService>();
+        services.AddScoped<IAPIKeyRepository, APIKeyRepository>();
+        services.AddSingleton<ILogoService, LogoService>();
+        services.AddSingleton<IImageDownloadQueue, ImageDownloadQueue>();
+        services.AddSingleton<ICacheableSpecification, CacheableSpecification>();
+        services.AddSingleton<IJobStatusService, JobStatusService>();
+        services.AddSingleton<IEPGHelper, EPGHelper>();
+        services.AddSingleton<IFileLoggingServiceFactory, FileLoggingServiceFactory>();
+        services.AddSingleton<IMessageService, MessageService>();
+        services.AddSingleton<IDataRefreshService, DataRefreshService>();
+        services.AddSingleton<IFileUtilService, FileUtilService>();
 
         _ = services.AddAutoMapper(
             Assembly.Load("StreamMaster.Domain"),
