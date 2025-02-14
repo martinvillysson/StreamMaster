@@ -48,6 +48,18 @@ export interface DownloadStats
 	Queue: number;
 	Successful: number;
 }
+export interface M3UGroup
+{
+	APIName: string;
+	Id: number;
+	IsIncluded: boolean;
+	IsPPV: boolean;
+	IsUser: boolean;
+	IsVOD: boolean;
+	M3UFileId: number;
+	Name: string;
+	TotalCount: number;
+}
 export interface SMMessage
 {
 	Detail?: string;
@@ -122,6 +134,13 @@ export interface StreamGroupSMChannelLink
 	SMChannelId: number;
 	StreamGroup: any;
 	StreamGroupId: number;
+}
+export interface UserGroup
+{
+	APIName: string;
+	Id: number;
+	Name: string;
+	TotalCount: number;
 }
 export interface VideoInfo
 {
