@@ -26,14 +26,6 @@ public class TestController(IBackgroundTaskQueue backgroundTaskQueue, ILogoServi
 
     [HttpPut]
     [Route("[action]")]
-    public async Task<ActionResult> AddTestTask(int DelayInSeconds)
-    {
-        await backgroundTaskQueue.SetTestTask(DelayInSeconds);
-        return Ok();
-    }
-
-    [HttpPut]
-    [Route("[action]")]
     public async Task<IActionResult> SetSystemReady(SetIsSystemReadyRequest request)
     {
         await Mediator.Send(request).ConfigureAwait(false);
