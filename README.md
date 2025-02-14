@@ -1,5 +1,16 @@
 > **NOTICE**: This repository is a decoupled fork from /SenexCrenshaw/StreamMaster, created after the upstream source code was revoked.
 
+## Update 3: 2025-02-14:
+
+I managed to source some commits up until 2025-01-05. As such, the `latest` release is running on `0.18.0-net9.2`.
+
+From this point in time, I'm unsure what developments were made as that's when everything went dark. Though clearly at some point, it was decided to jump to a `1.0.0.0`+ version. I might be able to also recover some functionality from later versions.
+
+As such, I invite you to please help collaborate with ideas and/or development by;  
+
+**Issues:** Open any problems you face with the release from this repository ([these releases](https://github.com/carlreid/StreamMaster/pkgs/container/streammaster))  
+**Discussions:** To relate what features were added beyond the point in time this repository has, or any other topics
+
 ## Update 2: 2025-02-12:
 
 I've managed to get a build working, where you can find a release at `ghcr.io/carlreid/streammaster:latest` ([view it here](https://github.com/carlreid/StreamMaster/pkgs/container/streammaster)).
