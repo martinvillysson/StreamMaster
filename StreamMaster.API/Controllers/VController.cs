@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+
 namespace StreamMaster.API.Controllers;
 
 [V1ApiController("v")]
-public class VsController(ILogger<VsController> logger, IVideoService videoService, IStreamGroupService streamGroupService, IChannelService channelService) : Controller
+public class VsController(ILogger<VsController> logger, IProfileService profileService, ICommandExecutor commandExecutor, IVideoService videoService, IStreamGroupService streamGroupService, IChannelService channelService) : Controller
 {
     [Authorize(Policy = "SGLinks")]
     [HttpGet]
@@ -78,6 +80,126 @@ public class VsController(ILogger<VsController> logger, IVideoService videoServi
             return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing the request.");
         }
     }
+
+    [Authorize(Policy = "SGLinks")]
+    [HttpGet]
+    [HttpHead]
+    [Route("c/{encodedStreamLocation}")]
+    [Route("c/{encodedStreamLocation}.ts")]
+    public async Task<ActionResult> HandleSStreamRequest(
+    string encodedStreamLocation,
+    CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(encodedStreamLocation))
+            {
+                logger.LogWarning("Invalid request: Missing required parameters.");
+                return BadRequest("Missing required parameters.");
+            }
+
+            string withoutExtension = Path.GetFileNameWithoutExtension(encodedStreamLocation);
+            string fileName = withoutExtension?.FromUrlSafeBase64String();
+
+            if (string.IsNullOrWhiteSpace(fileName) || !System.IO.File.Exists(fileName))
+            {
+                logger.LogWarning("File not found: {FileName}", fileName);
+                return NotFound();
+            }
+
+            HttpContext.Response.ContentType = "video/mp2t";
+            HttpContext.Response.Headers.CacheControl = "no-cache";
+            HttpContext.Response.Headers.Pragma = "no-cache";
+            HttpContext.Response.Headers.Expires = "0";
+            HttpContext.Response.Headers.ContentDisposition = $"inline; filename=\"{Path.GetFileName(fileName)}\"";
+
+            CommandProfileDto commandProfile = profileService.GetCommandProfile("SMFFMPEGLocal");
+            commandProfile.Parameters = "-hide_banner -loglevel error -i {streamUrl} -map 0 -c copy -f mpegts pipe:1";
+
+            using (var cancellationTokenSource = new CancellationTokenSource())
+            {
+                using (var linkedCTS = CancellationTokenSource.CreateLinkedTokenSource(
+                    cancellationToken,
+                    HttpContext.RequestAborted,
+                    cancellationTokenSource.Token))
+                {
+                    linkedCTS.Token.Register(() => logger.LogWarning("Linked cancellation token triggered."));
+                    cancellationToken.Register(() => logger.LogWarning("Request cancellation token triggered."));
+                    HttpContext.RequestAborted.Register(() => logger.LogWarning("Request aborted by client."));
+
+                    GetStreamResult res = commandExecutor.ExecuteCommand(commandProfile, fileName, "", null, linkedCTS.Token);
+
+                    if (res == null || res.Stream == null || res.ProcessId == -1)
+                    {
+                        logger.LogWarning("Failed to execute command for file: {FileName}", fileName);
+                        return NotFound();
+                    }
+
+                    try
+                    {
+                        byte[] buffer = new byte[16384];
+                        while (true)
+                        {
+                            int bytesRead = await res.Stream.ReadAsync(buffer, linkedCTS.Token);
+                            if (bytesRead > 0)
+                            {
+                                logger.LogDebug("Read {BytesRead} bytes from stream.", bytesRead);
+                                await HttpContext.Response.Body.WriteAsync(
+                                    buffer.AsMemory(0, bytesRead),
+                                    linkedCTS.Token);
+                            }
+                            else break;
+                        }
+                        logger.LogInformation("Streaming completed successfully for file: {FileName}.");
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Handle cancellation
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Error occurred while streaming the file: {FileName}");
+                        if (!HttpContext.Response.HasStarted)
+                            HttpContext.Response.StatusCode = 500;
+                    }
+                    finally
+                    {
+                        logger.LogInformation("Cleaning up resources for file: {FileName}");
+                        KillProcessById(res.ProcessId);
+                        await HttpContext.Response.Body.FlushAsync(HttpContext.RequestAborted);
+                        await res.Stream.DisposeAsync();
+                    }
+                    return new EmptyResult();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error processing stream request. encodedStreamLocation={EncodedStreamLocation}", encodedStreamLocation);
+            return !HttpContext.Response.HasStarted
+                ? StatusCode(500, "An error occurred while processing the request.")
+                : new EmptyResult();
+        }
+    }
+
+    public static void KillProcessById(int processId)
+    {
+        try
+        {
+            Process processById = Process.GetProcessById(processId);
+            processById.Kill();
+            processById.WaitForExit();
+        }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine($"No process with ID {processId} is running.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An error occurred while killing the process: " + ex.Message);
+        }
+    }
+
     private class UnregisterClientOnDispose(IChannelService channelService, IClientConfiguration config, ILogger logger) : IDisposable
     {
         private readonly IChannelService _channelService = channelService;
