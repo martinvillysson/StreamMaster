@@ -5,6 +5,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+	</PropertyGroup>
+	<PropertyGroup>
 		<NoWarn>NU1608</NoWarn>
 	</PropertyGroup>
   <ItemGroup>

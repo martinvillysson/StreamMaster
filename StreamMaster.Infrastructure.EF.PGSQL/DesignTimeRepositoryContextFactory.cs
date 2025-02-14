@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace StreamMaster.Infrastructure.EF.PGSQL;
 
@@ -10,9 +11,28 @@ public class DesignTimeRepositoryContextFactory : IDesignTimeDbContextFactory<PG
     {
         IServiceCollection services = new ServiceCollection();
 
-        _ = services.AddDbContext<PGSQLRepositoryContext>(options => options.UseNpgsql(PGSQLRepositoryContext.DbConnectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+        services.AddLogging(builder =>
+        {
+            builder.AddConsole();
+            builder.SetMinimumLevel(LogLevel.Information);
+        });
+
+        services.AddDbContext<PGSQLRepositoryContext>(options => options.UseNpgsql(PGSQLRepositoryContext.DbConnectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+
+        var optionsBuilder = new DbContextOptionsBuilder<PGSQLRepositoryContext>();
+        optionsBuilder.UseNpgsql(PGSQLRepositoryContext.DbConnectionString,
+            o =>
+            {
+                o.UseNodaTime();
+                o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+            })
+            .ConfigureWarnings(warnings => warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+
+        var serviceProvider = services.BuildServiceProvider();
 
         PGSQLRepositoryContext? context = services.BuildServiceProvider().GetService<PGSQLRepositoryContext>();
-        return context ?? throw new ApplicationException("Couldnt create context");
+        var logger = serviceProvider.GetRequiredService<ILogger<PGSQLRepositoryContext>>();
+
+        return new PGSQLRepositoryContext(optionsBuilder.Options, logger);
     }
 }

@@ -5,26 +5,49 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace StreamMaster.Infrastructure.EF.Base;
-#pragma warning disable CS8618 
+#pragma warning disable CS8618
+
 public class BaseRepositoryContext(DbContextOptions options)
     : DbContext(options), IDataProtectionKeyContext, IRepositoryContext
 {
     public DbSet<SystemKeyValue> SystemKeyValues { get; set; }
 
+    public DbSet<UserGroup> UserGroups { get; set; }
+
+    public DbSet<M3UGroup> M3UGroups { get; set; }
+
     public DbSet<EPGFile> EPGFiles { get; set; }
+
     public DbSet<M3UFile> M3UFiles { get; set; }
+
     public DbSet<ChannelGroup> ChannelGroups { get; set; }
+
     public DbSet<SMStream> SMStreams { get; set; }
+
     public DbSet<SMChannel> SMChannels { get; set; }
+
     public DbSet<SMChannelStreamLink> SMChannelStreamLinks { get; set; }
+
     public DbSet<SMChannelChannelLink> SMChannelChannelLinks { get; set; }
+
     public DbSet<StreamGroupSMChannelLink> StreamGroupSMChannels { get; set; }
+
     public DbSet<StreamGroupChannelGroup> StreamGroupChannelGroups { get; set; }
+
     public DbSet<StreamGroup> StreamGroups { get; set; }
+
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+
     public DbSet<StreamGroupProfile> StreamGroupProfiles { get; set; }
+
     public DbSet<StreamGroupSMChannelLink> StreamGroupSMChannelLinks { get; set; }
+
+    public DbSet<APIKey> APIKeys { get; set; }
+
+    public DbSet<Device> Devices { get; set; }
+
 #pragma warning restore CS8618
+
     public int ExecuteSqlRaw(string sql, params object[] parameters)
     {
         return Database.ExecuteSqlRaw(sql, parameters);
@@ -39,6 +62,7 @@ public class BaseRepositoryContext(DbContextOptions options)
     {
         return Database.SqlQueryRaw<ReturnType>(sql, parameters);
     }
+
     public Task<int> ExecuteSqlRawAsync(string sql, params object[] parameters)
     {
         return Database.ExecuteSqlRawAsync(sql, parameters);
@@ -48,6 +72,7 @@ public class BaseRepositoryContext(DbContextOptions options)
     {
         return Database.BeginTransactionAsync(cancellationToken);
     }
+
     public async Task BulkUpdateEntitiesAsync<TEntity>(
     List<TEntity> entities,
     int batchSize = 100,
@@ -112,6 +137,7 @@ public class BaseRepositoryContext(DbContextOptions options)
     {
         await BulkUpdateAsync(entities);
     }
+
     public Task BulkDeleteAsyncEntities<TEntity>(IQueryable<TEntity> entities, CancellationToken cancellationToken = default) where TEntity : class
     {
         return entities.ExecuteDeleteAsync(cancellationToken);
@@ -160,6 +186,7 @@ public class BaseRepositoryContext(DbContextOptions options)
     }
 
     #region ChannelGroup Configuration
+
     private static void ConfigureChannelGroup(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.Entity<ChannelGroup>()
@@ -170,9 +197,11 @@ public class BaseRepositoryContext(DbContextOptions options)
             .HasIndex(e => new { e.Name, e.IsHidden })
             .HasDatabaseName("idx_Name_IsHidden");
     }
-    #endregion
+
+    #endregion ChannelGroup Configuration
 
     #region SMChannel Configuration
+
     private static void ConfigureSMChannel(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.Entity<SMChannel>()
@@ -196,9 +225,11 @@ public class BaseRepositoryContext(DbContextOptions options)
             .HasIndex(e => new { e.ChannelNumber, e.Id })
             .HasDatabaseName("idx_smchannels_channelnumber_id");
     }
-    #endregion
+
+    #endregion SMChannel Configuration
 
     #region SMStream Configuration
+
     private static void ConfigureSMStream(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.Entity<SMStream>()
@@ -230,9 +261,11 @@ public class BaseRepositoryContext(DbContextOptions options)
             .HasIndex(e => new { e.NeedsDelete, e.M3UFileId })
             .HasDatabaseName("idx_smstreams_needsdelete_m3ufileid");
     }
-    #endregion
+
+    #endregion SMStream Configuration
 
     #region SMChannelStreamLink Configuration
+
     private static void ConfigureSMChannelStreamLink(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.Entity<SMChannelStreamLink>()
@@ -244,18 +277,22 @@ public class BaseRepositoryContext(DbContextOptions options)
             .HasIndex(e => new { e.SMChannelId, e.Rank })
             .HasDatabaseName("idx_smchannelstreamlinks_smchannelid_rank");
     }
-    #endregion
+
+    #endregion SMChannelStreamLink Configuration
 
     #region StreamGroup Configuration
+
     private static void ConfigureStreamGroup(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.Entity<StreamGroup>()
             .HasIndex(e => new { e.Name, e.Id })
             .HasDatabaseName("idx_streamgroups_name_id");
     }
-    #endregion
+
+    #endregion StreamGroup Configuration
 
     #region StreamGroupSMChannelLink Configuration
+
     private static void ConfigureStreamGroupSMChannelLink(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.Entity<StreamGroupSMChannelLink>()
@@ -263,15 +300,17 @@ public class BaseRepositoryContext(DbContextOptions options)
             .HasDatabaseName("idx_streamgroupsmchannellink_smchannelid_streamgroupid")
             .IsUnique();
     }
-    #endregion
+
+    #endregion StreamGroupSMChannelLink Configuration
 
     #region EPGFile Configuration
+
     private static void ConfigureEPGFile(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.Entity<EPGFile>()
             .HasIndex(e => e.Url)
             .HasDatabaseName("idx_epgfiles_url");
     }
-    #endregion
 
+    #endregion EPGFile Configuration
 }

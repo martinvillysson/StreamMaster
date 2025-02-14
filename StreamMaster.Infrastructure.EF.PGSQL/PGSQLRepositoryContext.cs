@@ -91,12 +91,16 @@ namespace StreamMaster.Infrastructure.EF.PGSQL
                     o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                 }
                 );
+
+            options.ConfigureWarnings(warnings => warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+
             Setting? setting = SettingsHelper.GetSetting<Setting>(BuildInfo.SettingsFile);
             if (setting?.EnableDBDebug == true)
             {
                 options.EnableSensitiveDataLogging(true);
             }
         }
+
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
         }
