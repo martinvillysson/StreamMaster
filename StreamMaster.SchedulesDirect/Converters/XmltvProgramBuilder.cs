@@ -49,7 +49,7 @@ namespace StreamMaster.SchedulesDirect.Converters
                 PreviouslyShown = BuildProgramPreviouslyShown(scheduleEntry),
                 Premiere = BuildProgramPremiere(scheduleEntry),
                 Live = scheduleEntry.IsLive ? string.Empty : null,
-                New = !scheduleEntry.IsRepeat ? string.Empty : null,
+                New = scheduleEntry.IsNew.HasValue ? (scheduleEntry.IsNew.Value ? "" : null) : null,
                 SubTitles2 = BuildProgramSubtitles(scheduleEntry),
                 Rating = BuildProgramRatings(scheduleEntry),
                 StarRating = BuildProgramStarRatings(mxfProgram)
@@ -252,44 +252,8 @@ namespace StreamMaster.SchedulesDirect.Converters
 
         private static string? BuildProgramDate(MxfProgram mxfProgram)
         {
-            return mxfProgram.IsMovie && mxfProgram.Year > 0
-                ? mxfProgram.Year.ToString()
-                : !string.IsNullOrEmpty(mxfProgram.OriginalAirdate) ? DateTime.Parse(mxfProgram.OriginalAirdate).ToString("yyyyMMdd") : null;
+            return !mxfProgram.IsMovie || mxfProgram.Year <= 0 ? (!string.IsNullOrEmpty(mxfProgram.OriginalAirdate) ? DateTime.Parse(mxfProgram.OriginalAirdate).ToString("yyyyMMdd") : mxfProgram.Year.ToString()) : mxfProgram.Year.ToString();
         }
-
-        //private List<XmltvText>? BuildProgramCategories(MxfProgram mxfProgram)
-        //{
-        //    if (string.IsNullOrEmpty(mxfProgram.Keywords))
-        //    {
-        //        return null;
-        //    }
-
-        //    List<string> categories = [];
-
-        //    foreach (string keywordId in mxfProgram.Keywords.Split(','))
-        //    {
-        //        if (keywordDict.TryGetValue(keywordId, out string? word))
-        //        {
-        //            categories.Add(word);
-        //        }
-        //    }
-
-        //    if (categories.Remove("Movies"))
-        //    {
-        //        if (!categories.Contains("Movie"))
-        //        {
-        //            categories.Add("Movie");
-        //        }
-        //    }
-
-        //    // Remove "Kids" if "Children" is also present
-        //    if (categories.Contains("Children"))
-        //    {
-        //        _ = categories.Remove("Kids");
-        //    }
-
-        //    return categories.Count == 0 ? null : categories.ConvertAll(category => new XmltvText { Text = category });
-        //}
 
         private List<XmltvIcon>? BuildProgramIcons(MxfScheduleEntry scheduleEntry, string baseUrl)
         {
@@ -367,7 +331,7 @@ namespace StreamMaster.SchedulesDirect.Converters
                 }
                 else
                 {
-                    string oad = !scheduleEntry.IsRepeat
+                    string oad = scheduleEntry.IsNew.HasValue
                         ? $"{scheduleEntry.StartTime.ToLocalTime():yyyy-MM-dd}"
                         : $"{DateTime.Parse(mxfProgram.OriginalAirdate):yyyy-MM-dd}";
 
@@ -419,7 +383,19 @@ namespace StreamMaster.SchedulesDirect.Converters
 
         private static XmltvPreviouslyShown? BuildProgramPreviouslyShown(MxfScheduleEntry scheduleEntry)
         {
-            return scheduleEntry.IsRepeat && !scheduleEntry.mxfProgram.IsMovie ? new XmltvPreviouslyShown { Text = string.Empty } : null;
+            XmltvPreviouslyShown xmltvPreviouslyShown;
+            if (!scheduleEntry.IsRepeat || scheduleEntry.mxfProgram.IsMovie)
+            {
+                xmltvPreviouslyShown = null;
+            }
+            else
+            {
+                xmltvPreviouslyShown = new XmltvPreviouslyShown()
+                {
+                    Text = string.Empty
+                };
+            }
+            return xmltvPreviouslyShown;
         }
 
         private static XmltvText? BuildProgramPremiere(MxfScheduleEntry scheduleEntry)
