@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 
 using StreamMaster.Domain.Configuration;
-using StreamMaster.Domain.Helpers;
 using StreamMaster.Infrastructure.EF.Base;
 
 namespace StreamMaster.Infrastructure.EF.PGSQL
@@ -10,34 +9,6 @@ namespace StreamMaster.Infrastructure.EF.PGSQL
     public partial class PGSQLRepositoryContext(DbContextOptions<PGSQLRepositoryContext> options, ILogger<PGSQLRepositoryContext> logger) : BaseRepositoryContext(options)
     {
         public static string DbConnectionString => $"Host={BuildInfo.DBHost};Database={BuildInfo.DBName};Username={BuildInfo.DBUser};Password={BuildInfo.DBPassword}";
-
-        public new bool IsEntityTracked<TEntity>(TEntity entity) where TEntity : class
-        {
-            return ChangeTracker.Entries<TEntity>().Any(e => e.Entity == entity);
-        }
-
-        public new void MigrateData()
-        {
-            ApplyCustomSqlScripts();
-
-            string? currentMigration = Database.GetAppliedMigrations().LastOrDefault();
-            if (currentMigration == null)
-            {
-                return;
-            }
-
-            //if (currentMigration == "20240229201207_ConvertToSMChannels")
-            //{
-            //if (!SystemKeyValues.Any(a => a.Key == "MigrateData_20240229201207_ConvertToSMChannels"))
-            //{
-            //    MigrateData_20240229201207_ConvertToSMChannels();
-            //    SystemKeyValues.Add(new SystemKeyValue { Key = "MigrateData_20240229201207_ConvertToSMChannels", Value = "1" });
-            //    await SaveChangesAsync().ConfigureAwait(false);
-            //}
-
-            //}
-            return;
-        }
 
         /// <summary>
         /// Executes all SQL scripts from the "Scripts" folder in alphabetical order.
@@ -79,30 +50,6 @@ namespace StreamMaster.Infrastructure.EF.PGSQL
                     throw;
                 }
             }
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            DirectoryHelper.CreateApplicationDirectories();
-            options.UseNpgsql(DbConnectionString,
-                o =>
-                {
-                    o.UseNodaTime();
-                    o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                }
-                );
-
-            options.ConfigureWarnings(warnings => warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
-
-            Setting? setting = SettingsHelper.GetSetting<Setting>(BuildInfo.SettingsFile);
-            if (setting?.EnableDBDebug == true)
-            {
-                options.EnableSensitiveDataLogging(true);
-            }
-        }
-
-        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-        {
         }
     }
 }
