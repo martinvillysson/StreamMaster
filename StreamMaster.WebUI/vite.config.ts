@@ -1,10 +1,12 @@
 import react from "@vitejs/plugin-react";
 import path from "node:path";
 import { visualizer } from "rollup-plugin-visualizer";
-// import viteCompression from 'vite-plugin-compression';
+import { fileURLToPath } from "node:url";
 
 import { builtinModules } from "module";
 import { defineConfig } from "vite";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
 	appType: "spa",
@@ -17,7 +19,7 @@ export default defineConfig({
 				assetFileNames: "assets/[name].[hash][extname]",
 				chunkFileNames: "assets/[name].[hash].js",
 				entryFileNames: "assets/[name].[hash].js",
-				manualChunks: (id): any => {
+				manualChunks: (id: any): string | undefined => {
 					console.log(id);
 					if (id.includes("node_modules")) {
 						return id
@@ -33,10 +35,10 @@ export default defineConfig({
 					if (id.includes("/StreamMaster.WebUI/lib/")) {
 						return "smLib";
 					}
-					if (id.includes("/StreamMaster.WebUI/components//")) {
+					if (id.includes("/StreamMaster.WebUI/components/")) {
 						return "smComponents";
 					}
-					if (id.includes("/StreamMaster.WebUI/features//")) {
+					if (id.includes("/StreamMaster.WebUI/features/")) {
 						return "smFeatures";
 					}
 					return undefined;
@@ -45,7 +47,7 @@ export default defineConfig({
 		},
 	},
 	clearScreen: true,
-	plugins: [react(), visualizer(), viteCompression()],
+	plugins: [react(), visualizer()],
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname),
