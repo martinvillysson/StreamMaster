@@ -42,8 +42,8 @@
       "preLaunchTask": "docker-run: debug",
       "platform": "node",
       "node": {
-        "package": "${workspaceFolder}/streammasterwebui/package.json",
-        "localRoot": "${workspaceFolder}/streammasterwebui"
+        "package": "${workspaceFolder}/StreamMaster.WebUI/package.json",
+        "localRoot": "${workspaceFolder}/StreamMaster.WebUI"
       }
     }
   ]

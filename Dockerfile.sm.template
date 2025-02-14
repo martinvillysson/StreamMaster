@@ -8,7 +8,7 @@ WORKDIR /src
 COPY . .
 
 # Build UI
-WORKDIR /src/streammasterwebui
+WORKDIR /src/StreamMaster.WebUI
 RUN echo "Building frontend..." && \
     npm install --silent && \
     npm run build --silent && \

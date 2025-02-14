@@ -22,7 +22,7 @@ Those looking for an alternative could check out [Threadfin](https://github.com/
 ## Original README
 
 <p align="center" width="100%">
-    <img  src="https://raw.githubusercontent.com/carlreid/StreamMaster/refs/heads/main/streammasterwebui/public/images/streammaster_logo.png" alt="StreamMaster Logo"/>
+    <img  src="https://raw.githubusercontent.com/carlreid/StreamMaster/refs/heads/main/StreamMaster.WebUI/public/images/streammaster_logo.png" alt="StreamMaster Logo"/>
     <H1 align="center" width="100%">Welcome to StreamMaster</H1>
 </p>
 

@@ -16,9 +16,9 @@ namespace BuildClientAPI
     {
         private const string AssemblyName = "StreamMaster.Application";
         private const string CSharpFileNamePrefix = @"..\..\..\..\StreamMaster.Application\";
-        private const string SMAPIFileNamePrefix = @"..\..\..\..\streammasterwebui\lib\smAPI";
-        private const string SignalRFilePathPrefix = @"..\..\..\..\streammasterwebui\lib\signalr";
-        private const string StoreFilePathPrefix = @"..\..\..\..\streammasterwebui\lib\redux";
+        private const string SMAPIFileNamePrefix = @"..\..\..\..\StreamMaster.WebUI\lib\smAPI";
+        private const string SignalRFilePathPrefix = @"..\..\..\..\StreamMaster.WebUI\lib\signalr";
+        private const string StoreFilePathPrefix = @"..\..\..\..\StreamMaster.WebUI\lib\redux";
         private const string DataRefreshFilePath = @"..\..\..\..\StreamMaster.Infrastructure\Services\DataRefreshService.cs";
         private const string DataRefreshAllFilePath = SMAPIFileNamePrefix + @"\DataRefreshAll.ts";
         private const string IDataRefreshFilePath = @"..\..\..\..\StreamMaster.Domain\Services\IDataRefreshService.cs";

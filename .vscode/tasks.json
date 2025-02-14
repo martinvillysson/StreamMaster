@@ -83,7 +83,7 @@
         }
       },
       "node": {
-        "package": "${workspaceFolder}/streammasterwebui/package.json",
+        "package": "${workspaceFolder}/StreamMaster.WebUI/package.json",
         "enableDebugging": true
       }
     },
@@ -95,7 +95,7 @@
       ],
       "platform": "node",
       "node": {
-        "package": "${workspaceFolder}/streammasterwebui/package.json"
+        "package": "${workspaceFolder}/StreamMaster.WebUI/package.json"
       }
     },
     {
@@ -103,12 +103,12 @@
       "label": "docker-build",
       "platform": "node",
       "dockerBuild": {
-        "dockerfile": "${workspaceFolder}/streammasterwebui/Dockerfile",
-        "context": "${workspaceFolder}/streammasterwebui",
+        "dockerfile": "${workspaceFolder}/StreamMaster.WebUI/Dockerfile",
+        "context": "${workspaceFolder}/StreamMaster.WebUI",
         "pull": true
       },
       "node": {
-        "package": "${workspaceFolder}/streammasterwebui/package.json"
+        "package": "${workspaceFolder}/StreamMaster.WebUI/package.json"
       }
     }
   ]

@@ -12,6 +12,6 @@
   - src/NzbDrone.Core/Download/Clients/**/*
 
 "Area: UI":
-  - streammasterwebui/**/*
+  - StreamMaster.WebUI/**/*
   - package.json
   - yarn.lock

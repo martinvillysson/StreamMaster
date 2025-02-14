@@ -356,9 +356,9 @@ StreamMasterAPI/wwwroot/initialize.js
 /StreamMasterAPI/wwwroot
 /StreamMasterAPI/sd_token.json
 /StreamMasterAPI/dupes*
-streammasterwebui/package-lock.json
-streammasterwebui/package-lock.json
-streammasterwebui/deps.txt
+StreamMaster.WebUI/package-lock.json
+StreamMaster.WebUI/package-lock.json
+StreamMaster.WebUI/deps.txt
 build
 coverage
 dist
@@ -375,5 +375,5 @@ release.config.cjs
 StreamMaster.Docs/.venv/
 StreamMaster.Docs/venv/
 StreamMaster.Docs/.chatgpt-md-translator
-streammasterwebui/stats.html
+StreamMaster.WebUI/stats.html
 StreamMaster.Docs/streammaster/site/*

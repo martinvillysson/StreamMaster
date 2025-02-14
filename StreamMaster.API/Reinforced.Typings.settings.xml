@@ -17,7 +17,7 @@
 			It is not used if RtDivideTypesAmongFiles='true' specified.
 			Important! Do not forget to include generated file to solution.
 		-->
-		<RtTargetFile>$(ProjectDir)..\streammasterwebui\lib\smAPI\smapiTypes.ts</RtTargetFile>
+		<RtTargetFile>$(ProjectDir)..\StreamMaster.WebUI\lib\smAPI\smapiTypes.ts</RtTargetFile>
 		<RtBypassTypeScriptCompilation >true</RtBypassTypeScriptCompilation>
 		<!--
 			This property sets RT configuration method for fluent configuration.

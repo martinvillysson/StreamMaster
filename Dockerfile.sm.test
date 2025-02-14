@@ -18,8 +18,8 @@ RUN echo "Starting .NET restore..." && \
     echo ".NET build completed successfully." || echo "Error during .NET build!"
 
 # # Step 2: Install npm packages, build the frontend, and copy to wwwroot with error-only output but keep echo messages
-# RUN echo "Navigating to frontend directory: /src/streammasterwebui" && \
-#     cd /src/streammasterwebui && \
+# RUN echo "Navigating to frontend directory: /src/StreamMaster.WebUI" && \
+#     cd /src/StreamMaster.WebUI && \
 #     echo "Installing npm dependencies..." && \
 #     npm install --silent && \
 #     echo "npm install completed successfully." || echo "Error during npm install!" && \
