@@ -33,7 +33,14 @@ namespace StreamMaster.Domain.Services
         /// </summary>
         /// <param name="URL">The URI of the artwork.</param>
         /// <param name="title">The title associated with the logo.</param>
-        void AddLogoToCache(string URL, string title, int FileId = -1, SMFileTypes smFileType = SMFileTypes.Logo, bool OG = false);
+        void AddLogoToCache(string source, string title, SMFileTypes sMFileType);
+
+        void AddLogoToCache(
+          string source,
+          string value,
+          string title,
+          SMFileTypes sMFileType,
+          bool HashSource = false);
 
         /// <summary>
         /// Adds a new logo using the specified <see cref="LogoFileDto"/>.
@@ -46,7 +53,12 @@ namespace StreamMaster.Domain.Services
         /// </summary>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task that represents the asynchronous operation. The result contains a <see cref="DataResponse{Boolean}"/> indicating the success of the operation.</returns>
-        Task<DataResponse<bool>> AddSMStreamLogosAsync(CancellationToken cancellationToken = default);
+        Task<DataResponse<bool>> CacheSMStreamLogosAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Caches the logos for EPG Channels.
+        /// </summary>
+        Task<DataResponse<bool>> CacheEPGChannelLogosAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Caches the logos for SM Channels.

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Web;
 
@@ -19,6 +20,7 @@ using StreamMaster.Domain.Enums;
 using StreamMaster.Domain.Extensions;
 using StreamMaster.Domain.Helpers;
 using StreamMaster.Domain.Repository;
+using StreamMaster.Domain.Services;
 using StreamMaster.Domain.XmltvXml;
 using StreamMaster.PlayList;
 using StreamMaster.PlayList.Models;
@@ -26,7 +28,18 @@ using StreamMaster.SchedulesDirect.Domain.Interfaces;
 
 namespace StreamMaster.Infrastructure.Services;
 
-public class LogoService(ICustomPlayListBuilder customPlayListBuilder, IHttpContextAccessor httpContextAccessor, IOptionsMonitor<Setting> settings, IOptionsMonitor<CustomLogoDict> customLogos, IImageDownloadService imageDownloadService, IContentTypeProvider mimeTypeProvider, IMemoryCache memoryCache, IImageDownloadQueue imageDownloadQueue, IServiceProvider serviceProvider, IDataRefreshService dataRefreshService, ILogger<LogoService> logger)
+public class LogoService(ICustomPlayListBuilder customPlayListBuilder,
+                         IHttpContextAccessor httpContextAccessor,
+                         IOptionsMonitor<Setting> settings,
+                         IOptionsMonitor<CustomLogoDict> customLogos,
+                         IImageDownloadService imageDownloadService,
+                         IContentTypeProvider mimeTypeProvider,
+                         IMemoryCache memoryCache,
+                         IImageDownloadQueue imageDownloadQueue,
+                         IServiceProvider serviceProvider,
+                         IFileUtilService fileUtilService,
+                         IDataRefreshService dataRefreshService,
+                         ILogger<LogoService> logger)
     : ILogoService
 {
     private ConcurrentDictionary<string, CustomLogoDto> Logos { get; } = [];
@@ -57,9 +70,10 @@ public class LogoService(ICustomPlayListBuilder customPlayListBuilder, IHttpCont
 
         customLogos.CurrentValue.AddCustomLogo(Source.ToUrlSafeBase64String(), Name);
 
-        AddLogoToCache(Source, Name, smFileType: SMFileTypes.CustomLogo);
+        AddLogoToCache(Source, Source, Name, SMFileTypes.CustomLogo, false);
 
         SettingsHelper.UpdateSetting(customLogos.CurrentValue);
+
         return Source;
     }
 
@@ -140,24 +154,19 @@ public class LogoService(ICustomPlayListBuilder customPlayListBuilder, IHttpCont
         try
         {
             int degreeOfParallelism = Environment.ProcessorCount;
-
-            await channelsQuery.AsAsyncEnumerable()
-                .ForEachAsync(degreeOfParallelism, channel =>
-                {
-                    if (string.IsNullOrEmpty(channel.Logo) || !channel.Logo.IsValidUrl())
-                    {
-                        return Task.CompletedTask;
-                    }
-                    AddLogoToCache(channel.Logo, channel.Name, channel.M3UFileId, SMFileTypes.Logo, OG: true);
-                    LogoInfo logoInfo = new(channel.Name, channel.Logo);
-                    imageDownloadQueue.EnqueueLogo(logoInfo);
+            await channelsQuery.AsAsyncEnumerable().ForEachAsync(degreeOfParallelism, channel =>
+            {
+                if (string.IsNullOrEmpty(channel.Logo) || !channel.Logo.IsValidUrl())
                     return Task.CompletedTask;
-                }, cancellationToken)
-                .ConfigureAwait(false);
+
+                AddLogoToCache(channel.Logo, channel.Logo, channel.Name, SMFileTypes.Logo, true);
+                imageDownloadQueue.EnqueueLogo(new LogoInfo(channel.Name, channel.Logo));
+                return Task.CompletedTask;
+            }, cancellationToken).ConfigureAwait(false);
 
             await dataRefreshService.RefreshLogos().ConfigureAwait(false);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (Exception ex) when (!(ex is OperationCanceledException))
         {
             logger.LogError(ex, "An error occurred while building logos cache from SM streams.");
             return DataResponse.False;
@@ -166,7 +175,7 @@ public class LogoService(ICustomPlayListBuilder customPlayListBuilder, IHttpCont
         return DataResponse.True;
     }
 
-    public async Task<DataResponse<bool>> AddSMStreamLogosAsync(CancellationToken cancellationToken)
+    public async Task<DataResponse<bool>> CacheSMStreamLogosAsync(CancellationToken cancellationToken)
     {
         using IServiceScope scope = serviceProvider.CreateScope();
         ISMStreamService smStreamService = scope.ServiceProvider.GetRequiredService<ISMStreamService>();
@@ -186,7 +195,7 @@ public class LogoService(ICustomPlayListBuilder customPlayListBuilder, IHttpCont
                 .ForEachAsync(degreeOfParallelism, stream =>
                 {
                     // Ensure thread safety in AddLogoToCache
-                    AddLogoToCache(stream.Logo, stream.Name, stream.M3UFileId, SMFileTypes.Logo, OG: true);
+                    AddLogoToCache(stream.Logo, stream.Logo, stream.Name, SMFileTypes.Logo, true);
                     return Task.CompletedTask;
                 }, cancellationToken)
                 .ConfigureAwait(false);
@@ -430,23 +439,40 @@ public class LogoService(ICustomPlayListBuilder customPlayListBuilder, IHttpCont
         Logos.TryAdd(logoFile.Source, logoFile);
     }
 
-    public void AddLogoToCache(string URL, string title, int FileId = -1, SMFileTypes smFileType = SMFileTypes.Logo, bool OG = false)
+    public void AddLogoToCache(string source, string title, SMFileTypes sMFileType)
     {
-        if (string.IsNullOrEmpty(URL))
-        {
+        AddLogoToCache(source, source, title, sMFileType, false);
+    }
+
+    public void AddLogoToCache(string source, string value, string title, SMFileTypes sMFileType, bool HashSource = false)
+    {
+        if (string.IsNullOrEmpty(source) || string.IsNullOrEmpty(value) || string.IsNullOrEmpty(title))
             return;
-        }
 
-        string sourceKey = OG ? URL : URL.GenerateFNV1aHash();
-
-        CustomLogoDto logoFile = new()
+        string key = value;
+        string logoPath = sMFileType switch
         {
-            Source = sourceKey,
-            Value = URL,
-            Name = title
+            SMFileTypes.TvLogo => $"/api/files/tv/{value}",
+            SMFileTypes.CustomLogo => $"/api/files/cu/{value}",
+            SMFileTypes.CustomPlayListLogo => $"/api/files/lc/{value}",
+            SMFileTypes.ProgramLogo => $"/api/files/pr/{value}",
+            _ => $"/api/files/{value}"
         };
 
-        CacheLogo(logoFile, OG);
+        value = logoPath;
+        if (!source.StartsWith("http"))
+            source = value;
+
+        CustomLogoDto logoDto = new()
+        {
+            Source = source,
+            Value = value,
+            Name = title,
+            FileId = (int)sMFileType,
+            IsReadOnly = true
+        };
+
+        Logos.TryAdd(key, logoDto);
     }
 
     public void ClearLogos()
@@ -690,5 +716,24 @@ public class LogoService(ICustomPlayListBuilder customPlayListBuilder, IHttpCont
         {
             _ = Logos.TryRemove(logo.Key, out _);
         }
+    }
+
+    public async Task<DataResponse<bool>> CacheEPGChannelLogosAsync(CancellationToken cancellationToken)
+    {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IEPGService epgService = scope.ServiceProvider.GetRequiredService<IEPGService>();
+
+        List<XmltvChannel> channels = new();
+        foreach (EPGFile epgFile in await epgService.GetEPGFilesAsync())
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return DataResponse.True;
+
+            string epgPath = Path.Combine(FileDefinitions.EPG.DirectoryLocation, epgFile.Source);
+            List<XmltvChannel> channelsFromXml = await fileUtilService.GetChannelsFromXmlAsync(epgPath, cancellationToken);
+            channels.AddRange(channelsFromXml);
+        }
+
+        return DataResponse.True;
     }
 }

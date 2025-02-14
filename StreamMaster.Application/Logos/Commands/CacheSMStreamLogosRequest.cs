@@ -7,7 +7,7 @@ public class CacheSMStreamLogosRequestHandler(ILogoService logoService) : IReque
 {
     public async Task<DataResponse<bool>> Handle(CacheSMStreamLogosRequest command, CancellationToken cancellationToken)
     {
-        await logoService.AddSMStreamLogosAsync(cancellationToken);
+        await logoService.CacheSMStreamLogosAsync(cancellationToken);
         return DataResponse.True;
     }
 }
