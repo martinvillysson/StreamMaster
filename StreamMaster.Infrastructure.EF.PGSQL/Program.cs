@@ -29,6 +29,31 @@ var serviceProvider = services.BuildServiceProvider();
 using (var scope = serviceProvider.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<PGSQLRepositoryContext>();
-    dbContext.Database.Migrate();
-    dbContext.MigrateData();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<PGSQLRepositoryContext>>();
+
+    try
+    {
+        try
+        {
+            var appliedMigrations = await dbContext.Database.GetAppliedMigrationsAsync();
+            var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
+
+            logger.LogInformation($"Current migration: {appliedMigrations.LastOrDefault() ?? "none"}");
+            logger.LogInformation($"Pending migrations: {string.Join(", ", pendingMigrations)}");
+
+            await dbContext.Database.MigrateAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while applying migrations");
+            throw;
+        }
+
+        dbContext.ApplyCustomSqlScripts();
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred during database initialization");
+        throw;
+    }
 }
