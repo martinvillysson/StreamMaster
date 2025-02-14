@@ -23,7 +23,9 @@ public static class ConfigureServices
         services.AddMemoryCache();
 
         services.AddScoped<IAPIKeyService, APIKeyService>();
+        services.AddScoped<IDeviceService, DeviceService>();
         services.AddScoped<IAPIKeyRepository, APIKeyRepository>();
+        //services.AddScoped<IDeviceRepository, DeviceRepository>(); // TODO
         services.AddSingleton<ILogoService, LogoService>();
         services.AddSingleton<IImageDownloadQueue, ImageDownloadQueue>();
         services.AddSingleton<ICacheableSpecification, CacheableSpecification>();
