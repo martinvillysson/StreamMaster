@@ -14,7 +14,7 @@ public class ProgramService(
     SMCacheManager<GenericDescription> descriptionCache,
     ISchedulesDirectAPIService schedulesDirectAPI,
     IProgramRepository programRepository)
-    : IProgramService, IDisposable
+    : IProgramService, IDisposable, IEPGCached
 {
     private readonly ConcurrentDictionary<string, string> programChannelsToProcess = new();
     private readonly SemaphoreSlim semaphore = new(SDAPIConfig.MaxParallelDownloads);
@@ -177,7 +177,6 @@ public class ProgramService(
     private async Task UpdateProgramAsync(Programme sdProgram)
     {
         MxfProgram? mxfProgram = programRepository.FindProgram(sdProgram.ProgramId);
-        //MxfProgram mxfProgram = schedulesDirectData.FindOrCreateProgram(sdProgram.ProgramId, sdProgram.Md5);
         if (mxfProgram == null)
         {
             logger.LogWarning("Program {ProgramId} not found in the data store.", sdProgram.ProgramId);
@@ -385,12 +384,6 @@ public class ProgramService(
         prg.IsSeries = SDHelpers.TableContains(types, "Series") && !SDHelpers.TableContains(sd.Genres, "Sports talk");
         prg.IsSpecial = SDHelpers.TableContains(types, "Special");
         prg.IsSports = sd.ProgramId.StartsWith("SP") || SDHelpers.TableContains(types, "Event") || SDHelpers.TableContains(sd.Genres, "Sports talk");
-
-        // Add the sports event to SportEvents for tracking
-        if (prg.IsSports)
-        {
-            //sportsImages.SportEvents.Add(prg);
-        }
     }
 
     // Helper methods for decoding movie information
@@ -438,79 +431,23 @@ public class ProgramService(
             mxfProgram.mxfSeriesInfo.Title = mxfProgram.Title;
         }
 
-        // For sports programs (identified by ProgramId starting with "SP"), create a series entry based on the title
-        if (mxfProgram.ProgramId.StartsWith("SP"))
+        if (mxfProgram.ProgramId.StartsWith("SP") || !mxfProgram.ProgramId.StartsWith("EP") || !sdSettings.CurrentValue.EpisodeAppendProgramDescription)
         {
-            //string name = mxfProgram.Title.Replace(' ', '_');
-            //mxfProgram.mxfSeriesInfo = schedulesDirectData.FindOrCreateSeriesInfo(name);
-            //seriesImages.SportsSeries.Add(name, mxfProgram.ProgramId); // Track sports series for artwork
+            return;
         }
-        else
+
+        string seriesId = "SH" + mxfProgram.mxfSeriesInfo.SeriesId + "0000";
+        var cached = await descriptionCache.GetAsync<GenericDescription>(seriesId);
+        if (cached != null)
         {
-            //mxfProgram.mxfSeriesInfo = schedulesDirectData.FindOrCreateSeriesInfo(mxfProgram.ProgramId.Substring(2, 8), mxfProgram.ProgramId);
-
-            if (mxfProgram.ProgramId.StartsWith("EP"))
+            if (!string.IsNullOrEmpty(cached.Description1000))
             {
-                if (sdSettings.CurrentValue.EpisodeAppendProgramDescription)
-                {
-                    string seriesId = $"SH{mxfProgram.mxfSeriesInfo.SeriesId}0000";
-                    GenericDescription? cached = await descriptionCache.GetAsync<GenericDescription>(seriesId);
-
-                    if (cached != null)
-                    {
-                        if (!string.IsNullOrEmpty(cached.Description1000))
-                        {
-                            mxfProgram.Description += cached.Description1000;
-                        }
-                        if (!string.IsNullOrEmpty(cached.Description100))
-                        {
-                            mxfProgram.ShortDescription += cached.Description100;
-                        }
-                    }
-                }
+                mxfProgram.Description += cached.Description1000;
             }
-            //else
-            //{
-            //    if (sdSettings.CurrentValue.EpisodeAppendProgramDescription)
-            //    {
-            //        if (mxfProgram.ProgramId.StartsWith("SH"))
-            //        {
-            //            GenericDescription? cached = await descriptionCache.GetAsync<GenericDescription>(mxfProgram.ProgramId);
-
-            //            if (cached != null && cached.StartAirdate == null)
-            //            {
-            //                cached.StartAirdate = mxfProgram.OriginalAirdate ?? string.Empty;
-            //            }
-            //        }
-            //    }
-            //}
-
-            //else if (mxfProgram.ProgramId.StartsWith("EP"))
-            //{
-            //    string seriesId = $"SH{mxfProgram.ProgramId.Substring(2, 8)}0000";
-            //    GenericDescription? cached = await descriptionCache.GetAsync<GenericDescription>(seriesId);
-
-            //    if (cached != null && cached.StartAirdate == null)
-            //    {
-            //        mxfProgram.Description = cached.Description1000;
-            //        mxfProgram.ShortDescription = cached.Description100;
-            //    }
-
-            //    else
-            //    {
-            //        // Add new series entry to the cache if it doesn't already exist
-            //        //GenericDescription newEntry = new()
-            //        //{
-            //        //    Code = 0,
-            //        //    Description1000 = mxfProgram.IsGeneric ? mxfProgram.Description : null,
-            //        //    Description100 = mxfProgram.IsGeneric ? mxfProgram.ShortDescription : null,
-            //        //    StartAirdate = mxfProgram.OriginalAirdate ?? string.Empty
-            //        //};
-            //        //string newEntryJson = JsonSerializer.Serialize(newEntry);
-            //        //await hybridCache.SetAsync(mxfProgram.ProgramId, newEntryJson);
-            //    }
-
-            //}
+            if (!string.IsNullOrEmpty(cached.Description100))
+            {
+                mxfProgram.ShortDescription += cached.Description100;
+            }
         }
     }
 

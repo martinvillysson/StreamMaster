@@ -132,7 +132,7 @@ public class LineupService(
             LogoInfo logoInfo = new(title, stationLogo.Url, SMFileTypes.Logo, false);
 
             CustomLogoDto d = new() { Source = logoInfo.FileName, Value = stationLogo.Url, Name = title };
-            logoService.CacheLogo(d);
+            logoService.AddLogoToCache(stationLogo.Url, logoInfo.FileName, title, SMFileTypes.Logo);
             imageDownloadQueue.EnqueueLogo(logoInfo);
         }
     }

@@ -12,7 +12,7 @@ public class EpisodeImages(
     IImageDownloadQueue imageDownloadQueue,
     IOptionsMonitor<SDSettings> sdSettings,
     ISchedulesDirectAPIService schedulesDirectAPI,
-    IProgramRepository programRepository) : IEpisodeImages, IDisposable
+    IProgramRepository programRepository) : IEpisodeImages, IEPGCached, IDisposable
 {
     private static readonly SemaphoreSlim classSemaphore = new(1, 1);
     private readonly SemaphoreSlim semaphore = new(SDAPIConfig.MaxParallelDownloads);

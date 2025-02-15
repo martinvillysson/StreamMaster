@@ -13,7 +13,7 @@ public class ScheduleService(
     ISchedulesDirectAPIService schedulesDirectAPI,
     IProgramRepository programRepository,
     ISchedulesDirectDataService schedulesDirectDataService
-    ) : IScheduleService, IDisposable
+    ) : IScheduleService, IEPGCached, IDisposable
 {
     private readonly ConcurrentDictionary<string, string[]> schedulesToProcess = new();
     private readonly SemaphoreSlim apiSemaphore = new(SDAPIConfig.MaxParallelDownloads);
@@ -238,7 +238,9 @@ public class ScheduleService(
             mxfProgram = mxfProgram,
             Is3D = SDHelpers.TableContains(program.VideoProperties, "3d"),
             IsHdtv = SDHelpers.TableContains(program.VideoProperties, "hd"),
-            IsPremiere = program.Premiere
+            IsPremiere = program.Premiere,
+            IsRepeat = program.Repeat,
+            IsNew = program.New
         };
 
         schedulesDirectData.FindOrCreateService(schedule.StationId).MxfScheduleEntries.ScheduleEntry.Add(scheduleEntry);
