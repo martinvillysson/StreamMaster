@@ -1,9 +1,14 @@
 ﻿using StreamMaster.Application.Services;
+using StreamMaster.Infrastructure.EF;
 using StreamMaster.Infrastructure.EF.PGSQL;
 
 namespace StreamMaster.API.Services;
 
-public class PostStartup(ILogger<PostStartup> logger, IServiceProvider serviceProvider, IBackgroundTaskQueue taskQueue) : BackgroundService
+public class PostStartup(
+    ILogger<PostStartup> logger,
+    IServiceProvider serviceProvider,
+    IBackgroundTaskQueue taskQueue,
+    IHostEnvironment hostEnvironment) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -14,16 +19,25 @@ public class PostStartup(ILogger<PostStartup> logger, IServiceProvider servicePr
 
         logger.LogInformation("Stream Master is starting.");
 
+        using IServiceScope scope = serviceProvider.CreateScope();
+
+        var repositoryContextInitializer = scope.ServiceProvider.GetRequiredService<RepositoryContextInitializer>();
+        await repositoryContextInitializer.EnsureDefaultData().ConfigureAwait(false);
+
+        if (hostEnvironment.IsDevelopment())
+        {
+            repositoryContextInitializer.CreateApplicationDirecotries();
+        }
+
         //DirectoryHelper.EmptyDirectory(BuildInfo.HLSOutputFolder);
 
-        using IServiceScope scope = serviceProvider.CreateScope();
         PGSQLRepositoryContext repositoryContext = scope.ServiceProvider.GetRequiredService<PGSQLRepositoryContext>();
         IDataRefreshService dataRefreshService = scope.ServiceProvider.GetRequiredService<IDataRefreshService>();
 
         IStreamGroupService StreamGroupService = scope.ServiceProvider.GetRequiredService<IStreamGroupService>();
         await StreamGroupService.GetDefaultSGIdAsync();
 
-        repositoryContext.MigrateData();
+        await repositoryContext.MigrateDatabaseAsync();
 
         await taskQueue.EPGSync(cancellationToken).ConfigureAwait(false);
 

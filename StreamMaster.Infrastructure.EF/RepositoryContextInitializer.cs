@@ -8,25 +8,15 @@ namespace StreamMaster.Infrastructure.EF;
 
 public class RepositoryContextInitializer(ILogger<RepositoryContextInitializer> logger, PGSQLRepositoryContext context, IOptionsMonitor<Setting> intSettings)
 {
-    public async Task InitializeAsync()
+    public async Task EnsureDefaultData()
     {
         try
         {
-            string? currentMigration = context.Database.GetAppliedMigrations().LastOrDefault();
-            if (currentMigration is not null and "20241017230528_M3U8OutPutProfile")
-            {
-                context.Database.ExecuteSqlRaw("DELETE FROM public.\"__EFMigrationsHistory\";");
-                context.Database.ExecuteSqlRaw(
-       "INSERT INTO public.\"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") " +
-       "VALUES ('20241018224015_Initial', '8.0.10');"
-   );
-            }
-
             await context.Database.MigrateAsync().ConfigureAwait(false);
 
             Setting settings = intSettings.CurrentValue;
 
-            if (!context.StreamGroups.Any(a => a.Name == BuildInfo.DefaultStreamGroupName))
+            if (!context.StreamGroups.Any(streamGroup => streamGroup.Name == BuildInfo.DefaultStreamGroupName))
             {
                 StreamGroup sg = new() { Name = BuildInfo.DefaultStreamGroupName, IsReadOnly = true, IsSystem = true, DeviceID = settings.DeviceID, GroupKey = Guid.NewGuid().ToString().Replace("-", "") };
                 _ = context.Add(sg);
@@ -74,7 +64,7 @@ public class RepositoryContextInitializer(ILogger<RepositoryContextInitializer> 
         }
     }
 
-    public void TrySeed()
+    public void CreateApplicationDirecotries()
     {
         DirectoryHelper.CreateApplicationDirectories();
     }

@@ -149,11 +149,6 @@ public class BaseRepositoryContext(DbContextOptions options)
         return ChangeTracker.Entries<TEntity>().Any(e => e.Entity == entity);
     }
 
-    public Task MigrateData()
-    {
-        return Task.CompletedTask;
-    }
-
     private bool _disposed = false;
 
     public override void Dispose()

@@ -6,7 +6,6 @@ using System.Text.Json.Serialization;
 using MediatR;
 
 using Microsoft.AspNetCore.HttpOverrides;
-
 using Reinforced.Typings.Attributes;
 
 using StreamMaster.API;
@@ -251,15 +250,13 @@ app.UseSession();
 
 using (IServiceScope scope = app.Services.CreateScope())
 {
+    // Perform additional default data initialization
     RepositoryContextInitializer initialiser = scope.ServiceProvider.GetRequiredService<RepositoryContextInitializer>();
-    await initialiser.InitializeAsync().ConfigureAwait(false);
+    await initialiser.EnsureDefaultData().ConfigureAwait(false);
     if (app.Environment.IsDevelopment())
     {
-        initialiser.TrySeed();
+        initialiser.CreateApplicationDirecotries();
     }
-
-    //IImageDownloadService imageDownloadService = scope.ServiceProvider.GetRequiredService<IImageDownloadService>();
-    //imageDownloadService.Start();
 }
 
 if (!string.IsNullOrEmpty(BuildInfo.PATH_BASE))

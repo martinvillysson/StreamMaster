@@ -159,7 +159,6 @@ public static class ConfigureServices
         });
 
         services.AddHostedService<PostStartup>();
-        //services.AddSingleton<PostStartup>();
 
         services.AddAppAuthenticationAndAuthorization();
 

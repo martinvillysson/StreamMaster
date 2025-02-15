@@ -74,6 +74,4 @@ public interface IRepositoryContext
     void Dispose();
 
     bool IsEntityTracked<TEntity>(TEntity entity) where TEntity : class;
-
-    abstract Task MigrateData();
 }

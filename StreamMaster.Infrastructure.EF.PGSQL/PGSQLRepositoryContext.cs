@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using StreamMaster.Domain.Configuration;
@@ -10,11 +11,40 @@ namespace StreamMaster.Infrastructure.EF.PGSQL
     {
         public static string DbConnectionString => $"Host={BuildInfo.DBHost};Database={BuildInfo.DBName};Username={BuildInfo.DBUser};Password={BuildInfo.DBPassword}";
 
+        public async Task MigrateDatabaseAsync()
+        {
+            try
+            {
+                try
+                {
+                    var appliedMigrations = await Database.GetAppliedMigrationsAsync();
+                    var pendingMigrations = await Database.GetPendingMigrationsAsync();
+
+                    logger.LogInformation("Current migration: {CurrentMigration}", appliedMigrations.LastOrDefault() ?? "none");
+                    logger.LogInformation("Pending migrations: {PendingMIgration}", string.Join(", ", pendingMigrations));
+
+                    await Database.MigrateAsync();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred while applying migrations");
+                    throw;
+                }
+
+                ApplyCustomSqlScripts();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during database initialization");
+                throw;
+            }
+        }
+
         /// <summary>
         /// Executes all SQL scripts from the "Scripts" folder in alphabetical order.
         /// </summary>
         /// <exception cref="FileNotFoundException">Thrown when the "Scripts" directory does not exist or no .sql files are found.</exception>
-        public void ApplyCustomSqlScripts()
+        private void ApplyCustomSqlScripts()
         {
             string scriptsDirectory = Path.Combine(AppContext.BaseDirectory, "Scripts");
 
