@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StreamMaster.Infrastructure.EF.PGSQL;
+using System;
+using System.Linq;
 
 var services = new ServiceCollection();
 

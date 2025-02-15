@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+	</PropertyGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\StreamMaster.Infrastructure.EF.PGSQL\StreamMaster.Infrastructure.EF.PGSQL.csproj" />
+	</ItemGroup>
+</Project>

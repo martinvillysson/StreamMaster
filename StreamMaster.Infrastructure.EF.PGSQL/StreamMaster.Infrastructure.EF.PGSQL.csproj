@@ -5,7 +5,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 	<PropertyGroup>
-		<OutputType>Exe</OutputType>
 		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
 	</PropertyGroup>
 	<PropertyGroup>
@@ -49,8 +48,6 @@
 	<ItemGroup>
 		<Content Include="Scripts\*.sql">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<Link>Scripts\%(Filename)%(Extension)</Link>
-			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
 	</ItemGroup>
 
