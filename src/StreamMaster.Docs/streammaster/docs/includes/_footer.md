@@ -1,8 +1,6 @@
-## Need Help or Have Questions? Join Us on Discord! 🎮
+## Need Help or Have Questions?
 
-For any questions, support, or discussions, you can join the official **StreamMaster Discord server**.
-
-## 👉 [Join StreamMaster Discord](https://discord.gg/gFz7EtHhG2) 👈
+For any questions, support, or discussions, you can [open a new discussion](https://github.com/carlreid/StreamMaster/discussions).
 
 ---
 

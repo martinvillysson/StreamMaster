@@ -43,16 +43,10 @@ This wiki is dedicated to providing information and resources for **StreamMaster
 
 Need help with **StreamMaster**? Here are a few ways to get assistance:
 
-- Join the conversation on our [Discord server](https://discord.gg/gFz7EtHhG2) 📞
+- For any questions, support, or discussions, you can [open a new discussion](https://github.com/carlreid/StreamMaster/discussions) 💬
 - Report bugs or request features on our [GitHub Issues](https://github.com/carlreid/StreamMaster/issues) 🛠️
 
 ---
-
-## Community
-
-Join the **StreamMaster** community and connect with other streamers and content creators on our [Discord server](https://discord.gg/gFz7EtHhG2).
-
-We hope you enjoy using **StreamMaster** and find this wiki helpful. Happy streaming! 📺✨
 
 ## Version Tags
 

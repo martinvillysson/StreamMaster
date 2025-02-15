@@ -106,10 +106,6 @@ StreamMaster is constantly growing, and we need the community's help to keep the
 
 Jump in, and let's make StreamMaster better together! ✨
 
-## Need Help or Have Questions? Join Us on Discord! 🎮
+## Need Help or Have Questions?
 
-For any questions, support, or discussions, you can join the official **StreamMaster Discord server**.
-
-👉 [Join StreamMaster Discord](https://discord.gg/gFz7EtHhG2) 👈
-
-We're here to help, and you'll find an active community of developers and users. Feel free to ask questions, report issues, or discuss new ideas for improving StreamMaster!
+For any questions, support, or discussions, you can [open a new discussion](https://github.com/carlreid/StreamMaster/discussions).
