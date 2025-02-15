@@ -38,10 +38,9 @@ const StreamGroupButton = ({ className = 'sm-w-10rem sm-input-dark' }: StreamGro
         />
       </div>
       <div className="pr-1" />
-      <div className="sm-w-4rem">
         <SMPopUp
-          buttonClassName="sm-w-4rem icon-sg"
-          buttonLabel="SG"
+          buttonClassName="sm-w-8rem icon-sg"
+          buttonLabel="Stream Groups"
           contentWidthSize="6"
           header={headerTemplate}
           icon="pi-list-check"
@@ -51,7 +50,6 @@ const StreamGroupButton = ({ className = 'sm-w-10rem sm-input-dark' }: StreamGro
         >
           <StreamGroupDataSelector id={'StreamGroup'} />
         </SMPopUp>
-      </div>
     </div>
   );
 };

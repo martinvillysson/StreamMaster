@@ -7,7 +7,7 @@ interface SMSimpleButtonProperties {
 
 const SimpleButton = ({ dataKey }: SMSimpleButtonProperties) => {
 	const { isTrue, setIsTrue } = useIsTrue(dataKey);
-
+	
 	return (
 		<SMButton
 			icon="pi-window-maximize"
