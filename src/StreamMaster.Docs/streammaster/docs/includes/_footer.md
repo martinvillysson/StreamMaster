@@ -6,4 +6,4 @@ For any questions, support, or discussions, you can join the official **StreamMa
 
 ---
 
-No contribution is too small! If you’d like to improve this documentation, we’d love to hear from you! Your contributions are recognized in the **StreamMaster Documentation Hall of Fame** 🎉.
+No contribution is too small! If you'd like to improve this documentation, we'd love to hear from you! Your contributions are recognized in the **StreamMaster Documentation Hall of Fame** 🎉.

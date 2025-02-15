@@ -29,7 +29,7 @@ Once an EPG/XML file is added using these options, StreamMaster:
 1. **Validates** - Ensures the provided URL or local file source is accessible.
 2. **Fetches and Parses Content** - Downloads and reads the XML content to populate guide information.
 3. **Processes EPG Data** - Adjusts time zones, applies colors, and links programs to channels as per user settings.
-4. **Saves and Updates** - The EPG file is saved within StreamMaster’s repository, updating program data periodically as specified.
+4. **Saves and Updates** - The EPG file is saved within StreamMaster's repository, updating program data periodically as specified.
 
 ### Error Handling 🔄
 

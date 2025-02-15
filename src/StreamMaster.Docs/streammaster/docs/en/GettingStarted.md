@@ -90,12 +90,12 @@ services:
 
 - **Image**: Specifies the StreamMaster image to use. `senexcrenshaw/streammaster:latest`
 - **Ports**:
-  - `7095`: The default HTTP port for StreamMaster’s web interface (default: `7095`).
+  - `7095`: The default HTTP port for StreamMaster's web interface (default: `7095`).
     _Make sure port matches the `DEFAULT_PORT`._
   - `7096`: The HTTPS (SSL) port (optional, default: `7096`).
     _Make sure port matches the `DEFAULT_SSL_PORT`._
 - **Environment Variables**: The following environment variables are set
-  - `DEFAULT_PORT`: The default HTTP port for StreamMaster’s web interface (default: `7095`).
+  - `DEFAULT_PORT`: The default HTTP port for StreamMaster's web interface (default: `7095`).
   - `DEFAULT_SSL_PORT`: The HTTPS (SSL) port (optional, default: `7096`).
   - `PUID` and `PGID`: Set the user and group IDs that the container will use, ensuring file permissions (default: `1000`).
   - `POSTGRES_USER`: Defines the PostgreSQL database user (default: `postgres`).

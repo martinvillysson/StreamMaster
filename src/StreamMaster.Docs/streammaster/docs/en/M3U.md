@@ -34,7 +34,7 @@ Once an M3U file is added using these options, StreamMaster:
 1. **Validates** - Ensures the provided URL/Local source is accessible.
 2. **Fetches and Parses Content** - Downloads and reads the M3U content to generate stream entries.
 3. **Syncs and Organizes Channels** - Based on the selected options, channels are organized, and metadata is applied.
-4. **Saves and Updates** - The file is saved within StreamMaster’s repository and refreshed periodically based on the specified interval.
+4. **Saves and Updates** - The file is saved within StreamMaster's repository and refreshed periodically based on the specified interval.
 
 ### Error Handling 🔄
 

@@ -39,13 +39,13 @@ public class StationPreview
         // Create a composite Id using Lineup and StationId
         Id = $"{Lineup}|{StationId}";
 
-        // Assign Country if it’s not null or empty
+        // Assign Country if it's not null or empty
         if (!string.IsNullOrEmpty(station.Country))
         {
             Country = station.Country;
         }
 
-        // Assign PostalCode if it’s not null or empty
+        // Assign PostalCode if it's not null or empty
         if (!string.IsNullOrEmpty(station.PostalCode))
         {
             PostalCode = station.PostalCode;

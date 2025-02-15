@@ -1,10 +1,10 @@
 # 🔐 Authentication
 
-Stream Master supports two primary authentication methods, ensuring secure access for both the User Interface (UI) and generated links. Here’s an overview of each:
+Stream Master supports two primary authentication methods, ensuring secure access for both the User Interface (UI) and generated links. Here's an overview of each:
 
 ## 1. UI Authentication (Forms/None)
 
-UI authentication controls access to Stream Master’s user interface. There are two options for UI auth, **Forms** and **None**.
+UI authentication controls access to Stream Master's user interface. There are two options for UI auth, **Forms** and **None**.
 
 ### 1.1 Forms Authentication
 

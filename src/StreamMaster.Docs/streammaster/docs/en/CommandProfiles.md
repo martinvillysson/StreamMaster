@@ -26,7 +26,7 @@ StreamMaster includes several default Command Profiles, each optimized for commo
 
 StreamMaster provides two useful parameter substitutions to simplify dynamic configurations:
 
-- **`{clientUserAgent}`**: Inserts the client’s user agent string, allowing streams to be configured for specific devices or browsers.
+- **`{clientUserAgent}`**: Inserts the client's user agent string, allowing streams to be configured for specific devices or browsers.
 - **`{streamUrl}`**: Dynamically replaces with the URL of the stream being accessed.
 
 These substitutions let you customize commands without hardcoding specific values, making your Command Profiles more versatile.
@@ -72,7 +72,7 @@ StreamMaster automatically searches for command executables within the following
 - `/usr/bin`
 - `/bin`
 
-This allows StreamMaster to locate and use common streaming utilities (e.g., `ffmpeg` or custom scripts like `yt.sh`), provided they’re installed in standard system paths.
+This allows StreamMaster to locate and use common streaming utilities (e.g., `ffmpeg` or custom scripts like `yt.sh`), provided they're installed in standard system paths.
 
 ---
 
@@ -85,8 +85,6 @@ To create or edit a custom Command Profile:
 3. Save and apply this profile to the desired Stream Groups.
 
 > **Note:** System default profiles cannot be modified to ensure stability and reliability in default configurations.
-
-> **Tip:** For advanced scenarios, consult the [Discord channel on Command Profiles](https://discord.com/channels/1075403862124531753/1296815673472974878) for examples and in-depth usage.
 
 By using Command Profiles effectively, you can optimize StreamMaster for diverse network configurations and streaming setups. Explore the available profiles and customize as needed to achieve the best results!
 

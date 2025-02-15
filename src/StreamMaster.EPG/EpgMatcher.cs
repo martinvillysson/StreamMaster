@@ -116,7 +116,7 @@ public sealed class EpgMatcher(ICacheManager cacheManager) : IEpgMatcher
             string fallbackName = channel.Name ?? string.Empty;
 
             // We try matching against multiple fields. We'll consider DisplayName and ChannelName.
-            // We’ll score each candidate, pick the lowest Levenshtein distance.
+            // We'll score each candidate, pick the lowest Levenshtein distance.
             // If TVGName is empty, we fallback to Name.
             if (string.IsNullOrEmpty(tvgName))
             {

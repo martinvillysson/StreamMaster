@@ -85,7 +85,7 @@ To contribute to the documentation:
 2. Create a new branch for your changes.
 3. Ensure that English (`en`) is updated and provide the best possible translations for other supported languages, then submit a PR.
 
-That’s it! 🎉 You’ve contributed to StreamMaster!
+That's it! 🎉 You've contributed to StreamMaster!
 
 ## Tips for Writing Good Documentation
 
@@ -104,7 +104,7 @@ We appreciate every contribution, no matter how small! All contributors will be 
 
 StreamMaster is constantly growing, and we need the community's help to keep the documentation top-notch. No contribution is too small, whether it's fixing typos, adding examples, or translating content.
 
-Jump in, and let’s make StreamMaster better together! ✨
+Jump in, and let's make StreamMaster better together! ✨
 
 ## Need Help or Have Questions? Join Us on Discord! 🎮
 
@@ -112,4 +112,4 @@ For any questions, support, or discussions, you can join the official **StreamMa
 
 👉 [Join StreamMaster Discord](https://discord.gg/gFz7EtHhG2) 👈
 
-We’re here to help, and you’ll find an active community of developers and users. Feel free to ask questions, report issues, or discuss new ideas for improving StreamMaster!
+We're here to help, and you'll find an active community of developers and users. Feel free to ask questions, report issues, or discuss new ideas for improving StreamMaster!

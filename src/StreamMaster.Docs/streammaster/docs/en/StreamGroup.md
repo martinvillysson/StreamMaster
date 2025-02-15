@@ -6,7 +6,7 @@ A **Stream Group** in StreamMaster is a way to organize and manage multiple stre
 
 ## Creating a Stream Group 🛠
 
-To add a new Stream Group in StreamMaster, use the **Create Stream Group** option within the StreamMaster UI. Here, you can define the group’s name and optionally specify an output profile, command profile, and a unique group key. Below are the primary options available when creating a Stream Group.
+To add a new Stream Group in StreamMaster, use the **Create Stream Group** option within the StreamMaster UI. Here, you can define the group's name and optionally specify an output profile, command profile, and a unique group key. Below are the primary options available when creating a Stream Group.
 
 ### Stream Group Options
 
@@ -24,11 +24,11 @@ Once a Stream Group is created using these options, StreamMaster:
 1. **Validates** - Ensures that the name is unique and not reserved. (e.g., "all" is reserved and cannot be used).
 2. **Generates a Unique ID** - Uses an internal generator to assign a unique device ID for the group.
 3. **Applies Profiles** - Adds default or specified profiles for output and commands, allowing customization of streaming behavior.
-4. **Saves and Updates** - The Stream Group is saved within StreamMaster’s repository and becomes available for immediate use.
+4. **Saves and Updates** - The Stream Group is saved within StreamMaster's repository and becomes available for immediate use.
 
 # 🔐 Stream Group Encryption & Security in StreamMaster
 
-StreamMaster offers robust security options for controlling access and securing links within **Stream Groups (SGs)**. Stream Groups allow for encryption through group keys, providing a straightforward yet secure way to manage link access. This section covers the security features available for Stream Groups and explains how they work alongside StreamMaster’s broader authentication features.
+StreamMaster offers robust security options for controlling access and securing links within **Stream Groups (SGs)**. Stream Groups allow for encryption through group keys, providing a straightforward yet secure way to manage link access. This section covers the security features available for Stream Groups and explains how they work alongside StreamMaster's broader authentication features.
 
 ## Stream Group Security Features 🔒
 
@@ -83,7 +83,7 @@ For more on these options, refer to the
 
 If an error occurs during Stream Group creation:
 
-- Ensure the **Name** is filled out and doesn’t use reserved words like "all".
+- Ensure the **Name** is filled out and doesn't use reserved words like "all".
 - Check that any specified **profiles** (Output Profile or Command Profile) exist and are correctly named.
 - If no Group Key is provided, StreamMaster will generate one automatically.
 
