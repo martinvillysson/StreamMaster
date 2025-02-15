@@ -19,11 +19,11 @@ COPY docker-entrypoint.sh docker-ensure-initdb.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-ensure-initdb.sh
 RUN ln -sT docker-ensure-initdb.sh /usr/local/bin/docker-enforce-initdb.sh
 
-COPY backup.sh /usr/local/bin/backup.sh
-COPY restore.sh /usr/local/bin/restore.sh
-COPY yt.sh /usr/local/bin/yt.sh
-COPY entrypoint.sh /entrypoint.sh
-COPY env.sh /env.sh
+COPY src/scripts/backup.sh /usr/local/bin/backup.sh
+COPY src/scripts/restore.sh /usr/local/bin/restore.sh
+COPY src/scripts/yt.sh /usr/local/bin/yt.sh
+COPY src/scripts/entrypoint.sh /entrypoint.sh
+COPY src/scripts/env.sh /env.sh
 RUN chmod +x /entrypoint.sh /env.sh /usr/local/bin/backup.sh /usr/local/bin/restore.sh /usr/local/bin/yt.sh
 
 EXPOSE 7095
