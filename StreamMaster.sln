@@ -16,37 +16,37 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.SchedulesDirect.Services", "StreamMaster.SchedulesDirect.Services\StreamMaster.SchedulesDirect.Services.csproj", "{B64C6EE8-8F89-4AE3-B9F6-8CCBBB82E44A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.SchedulesDirect.Services", "src\StreamMaster.SchedulesDirect.Services\StreamMaster.SchedulesDirect.Services.csproj", "{B64C6EE8-8F89-4AE3-B9F6-8CCBBB82E44A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.SchedulesDirect.Domain", "StreamMaster.SchedulesDirect.Domain\StreamMaster.SchedulesDirect.Domain.csproj", "{653470B9-220C-4811-A2AA-EC7BF361FB0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.SchedulesDirect.Domain", "src\StreamMaster.SchedulesDirect.Domain\StreamMaster.SchedulesDirect.Domain.csproj", "{653470B9-220C-4811-A2AA-EC7BF361FB0A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.SchedulesDirect", "StreamMaster.SchedulesDirect\StreamMaster.SchedulesDirect.csproj", "{CF7CEEDA-25BB-4C99-BFDC-B5A37B3F3B0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.SchedulesDirect", "src\StreamMaster.SchedulesDirect\StreamMaster.SchedulesDirect.csproj", "{CF7CEEDA-25BB-4C99-BFDC-B5A37B3F3B0D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Domain", "StreamMaster.Domain\StreamMaster.Domain.csproj", "{3D819556-DA48-47D9-B096-0B997D60CBD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Domain", "src\StreamMaster.Domain\StreamMaster.Domain.csproj", "{3D819556-DA48-47D9-B096-0B997D60CBD9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Infrastructure", "StreamMaster.Infrastructure\StreamMaster.Infrastructure.csproj", "{32A5D01F-8498-4CFE-86A5-FA76BBDCDCB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Infrastructure", "src\StreamMaster.Infrastructure\StreamMaster.Infrastructure.csproj", "{32A5D01F-8498-4CFE-86A5-FA76BBDCDCB2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Application", "StreamMaster.Application\StreamMaster.Application.csproj", "{D509329D-B374-4DCB-B1D2-B2B06E58BC8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Application", "src\StreamMaster.Application\StreamMaster.Application.csproj", "{D509329D-B374-4DCB-B1D2-B2B06E58BC8B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.API", "StreamMaster.API\StreamMaster.API.csproj", "{BD30670C-128A-49A4-89AC-4A11238ED058}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.API", "src\StreamMaster.API\StreamMaster.API.csproj", "{BD30670C-128A-49A4-89AC-4A11238ED058}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Streams", "StreamMaster.Streams\StreamMaster.Streams.csproj", "{C9557479-5D40-4B83-B764-2A78A29F4AB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Streams", "src\StreamMaster.Streams\StreamMaster.Streams.csproj", "{C9557479-5D40-4B83-B764-2A78A29F4AB3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Streams.Domain", "StreamMaster.Streams.Domain\StreamMaster.Streams.Domain.csproj", "{6DB5E422-9D6A-4C74-A495-A5C24861CAD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Streams.Domain", "src\StreamMaster.Streams.Domain\StreamMaster.Streams.Domain.csproj", "{6DB5E422-9D6A-4C74-A495-A5C24861CAD7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Infrastructure.EF.PGSQL", "StreamMaster.Infrastructure.EF.PGSQL\StreamMaster.Infrastructure.EF.PGSQL.csproj", "{E0C90707-7E6B-4593-AEE6-0D4A1743810C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Infrastructure.EF.PGSQL", "src\StreamMaster.Infrastructure.EF.PGSQL\StreamMaster.Infrastructure.EF.PGSQL.csproj", "{E0C90707-7E6B-4593-AEE6-0D4A1743810C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Infrastructure.EF", "StreamMaster.Infrastructure.EF\StreamMaster.Infrastructure.EF.csproj", "{9603826D-4031-4944-A5D3-47CD59CD2E8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Infrastructure.EF", "src\StreamMaster.Infrastructure.EF\StreamMaster.Infrastructure.EF.csproj", "{9603826D-4031-4944-A5D3-47CD59CD2E8D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Infrastructure.EF.Base", "StreamMaster.Infrastructure.EF.Base\StreamMaster.Infrastructure.EF.Base.csproj", "{5559BFDA-6CD9-447E-9253-22156D5F3EB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.Infrastructure.EF.Base", "src\StreamMaster.Infrastructure.EF.Base\StreamMaster.Infrastructure.EF.Base.csproj", "{5559BFDA-6CD9-447E-9253-22156D5F3EB9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildClientAPI", "BuildClientAPI\BuildClientAPI.csproj", "{96684389-4E49-457E-A99F-F6C3EE4F536E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildClientAPI", "src\BuildClientAPI\BuildClientAPI.csproj", "{96684389-4E49-457E-A99F-F6C3EE4F536E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.PlayList", "StreamMaster.PlayList\StreamMaster.PlayList.csproj", "{ACC8203B-0256-4218-B089-C1145C4E959C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamMaster.PlayList", "src\StreamMaster.PlayList\StreamMaster.PlayList.csproj", "{ACC8203B-0256-4218-B089-C1145C4E959C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamMaster.EPG", "StreamMaster.EPG\StreamMaster.EPG.csproj", "{2E22C6A6-5B92-3910-00B2-3D7410403136}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamMaster.EPG", "src\StreamMaster.EPG\StreamMaster.EPG.csproj", "{2E22C6A6-5B92-3910-00B2-3D7410403136}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamMaster.Infrastructure.EF.PGSQL.Console", "StreamMaster.Infrastructure.EF.PGSQL.Console\StreamMaster.Infrastructure.EF.PGSQL.Console.csproj", "{ADD8EDF8-775B-468C-3BAB-2F0C4EDB1BEC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamMaster.Infrastructure.EF.PGSQL.Console", "src\StreamMaster.Infrastructure.EF.PGSQL.Console\StreamMaster.Infrastructure.EF.PGSQL.Console.csproj", "{ADD8EDF8-775B-468C-3BAB-2F0C4EDB1BEC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
