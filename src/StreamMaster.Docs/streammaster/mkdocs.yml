@@ -23,22 +23,22 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 nav:
-  - Home 🏠: index.md
-  - Getting Started 🚀: GettingStarted.md
-  - Auth 🔑: Auth.md
-  - EPG/XML Files 📅: EPG.md
-  - M3U Files 📜: M3U.md
-  - Schedules Direct 📅: SD.md
-  - StreamGroup 📺: StreamGroup.md
-  - Profiles 🧑‍💻:
+  - Home: index.md
+  - Getting Started: GettingStarted.md
+  - Auth: Auth.md
+  - EPG/XML Files: EPG.md
+  - M3U Files: M3U.md
+  - Schedules Direct: SD.md
+  - StreamGroup: StreamGroup.md
+  - Profiles:
       - CommandProfiles.md
       - OutputProfiles.md
-  - Backup & Restore 🗄️: BackupRestore.md
-  - Settings ⚙️: Settings.md
-  - Docs 📘: Docs.md
-  - M3U Output Attributes 🎬: M3U_Output_Attributes.md
+  - Backup & Restore: BackupRestore.md
+  - Settings: Settings.md
+  - Docs: Docs.md
+  - M3U Output Attributes: M3U_Output_Attributes.md
 
-  - Contributors 🌟: Contributors.md
+  - Contributors: Contributors.md
 
 plugins:
   - search
