@@ -1,0 +1,34 @@
+name: Bug Report
+description: Please do not use bug reports for support issues. For help or support, please create a Discussion at https://github.com/carlreid/StreamMaster/discussions.
+title: "Bug: "
+labels: ["status:not-yet-viewed", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Need help or support? Please [create a Discussion](https://github.com/carlreid/StreamMaster/discussions).
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what the bug is.
+      placeholder: Tell us what's happening...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Stream Master Version
+      description: What version of Stream Master are you running?
+      placeholder: e.g. 1.2.3
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
