@@ -104,7 +104,7 @@ docker_init_database_dir() {
 # assumes database is not set up, ie: [ -z "$DATABASE_ALREADY_EXISTS" ]
 docker_verify_minimum_env() {
 	case "${PG_MAJOR:-}" in
-		12 | 13) # https://github.com/postgres/postgres/commit/67a472d71c98c3d2fa322a1b4013080b20720b98
+		13) # https://github.com/postgres/postgres/commit/67a472d71c98c3d2fa322a1b4013080b20720b98
 			# check password first so we can output the warning before postgres
 			# messes it up
 			if [ "${#POSTGRES_PASSWORD}" -ge 100 ]; then
@@ -252,7 +252,7 @@ pg_setup_hba_conf() {
 		printf '\n'
 		if [ 'trust' = "$POSTGRES_HOST_AUTH_METHOD" ]; then
 			printf '# warning trust is enabled for all connections\n'
-			printf '# see https://www.postgresql.org/docs/12/auth-trust.html\n'
+			printf '# see https://www.postgresql.org/docs/17/auth-trust.html\n'
 		fi
 		printf 'host all all all %s\n' "$POSTGRES_HOST_AUTH_METHOD"
 	} >> "$PGDATA/pg_hba.conf"
@@ -298,26 +298,6 @@ _pg_want_help() {
 	return 1
 }
 
-add_line_if_not_exists() {
-    # Arguments
-    local file=$1
-    local line=$2
-
-    # Check if the file exists
-    if [ -f "$file" ]; then
-		
-        # Check if the line already exists in the file
-        if ! grep -qF "$line" "$file"; then
-			echo "Updating $file"
-            # If the line does not exist, append it to the file
-            echo "$line" | tee -a "$file" > /dev/null
-        fi
-    else      
-        # If you decide to do nothing when the file doesn't exist, you can leave this section empty or add a log message
-        echo "Skipping: File $file does not exist."
-    fi
-}
-
 _main() {
 	# if first arg looks like a flag, assume we want to run postgres server
 	if [ "${1:0:1}" = '-' ]; then
@@ -354,15 +334,6 @@ _main() {
 			docker_temp_server_stop
 			unset PGPASSWORD
 
-			# Add the following lines to the configuration files
-			FILE="/config/DB/postgresql.conf"
-			LINE="listen_addresses = '*'"
-			add_line_if_not_exists "$FILE" "$LINE"
-
-			FILE="/config/DB/pg_hba.conf"
-			LINE="host    all             all             0.0.0.0/0               trust"
-			add_line_if_not_exists "$FILE" "$LINE"
-
 			cat <<-'EOM'
 
 				PostgreSQL init process complete; ready for start up.
@@ -376,8 +347,6 @@ _main() {
 			EOM
 		fi
 	fi
-
-
 
 	exec "$@"
 }

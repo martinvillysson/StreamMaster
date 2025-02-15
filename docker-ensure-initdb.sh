@@ -49,9 +49,7 @@ if [ -z "$DATABASE_ALREADY_EXISTS" ]; then
 	docker_process_init_files /docker-entrypoint-initdb.d/*
 
 	docker_temp_server_stop
-
 	unset PGPASSWORD
-
 else
 	self="$(basename "$0")"
 	case "$self" in
