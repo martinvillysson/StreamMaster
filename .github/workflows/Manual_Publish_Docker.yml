@@ -38,7 +38,64 @@ env:
   FINAL_IMAGE_NAME: ${{ github.repository_owner }}/streammaster
 
 jobs:
+
+  semantic-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          set -e
+          npm ci
+
+      - name: Copy release config
+        run: |
+          set -e
+          if [[ "${{ inputs.release_as_latest }}" == "true" ]]; then
+            cp release.config.release.cjs release.config.cjs
+          else
+            cp release.config.norelease.cjs release.config.cjs
+          fi
+
+      - name: Semantic Release
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          # Delete the local tag if it exists
+          git tag -l "v*" | xargs -r git tag -d
+          # Fetch all tags from remote
+          git fetch --tags
+          # Run semantic-release with --dry-run first to check if a release would be created
+          if npx semantic-release --dry-run; then
+            npx semantic-release
+          else
+            # If no new release would be created, set the outputs manually
+            echo "new_release_published=false" >> $GITHUB_OUTPUT
+            # Get the latest tag as the version
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ ! -z "$LATEST_TAG" ]; then
+              echo "new_release_version=${LATEST_TAG#v}" >> $GITHUB_OUTPUT
+            fi
+          fi
+
   setup:
+    needs: semantic-release
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.gitversion.outputs.semVer }}
@@ -49,6 +106,8 @@ jobs:
       build_sm: ${{ inputs.build_sm || inputs.build_all }}
       skip_release_main_build: ${{ inputs.skip_release_main_build }}
       release_as_latest: ${{ inputs.release_as_latest }}
+      semantic_version: ${{ needs.semantic-release.outputs.new_release_version }}
+      is_release: ${{ needs.semantic-release.outputs.new_release_published }}
 
     steps:
       - uses: actions/checkout@v4
@@ -65,19 +124,26 @@ jobs:
         uses: gittools/actions/gitversion/execute@v0
 
   build:
-    needs: setup
+    needs: [setup, semantic-release]
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ needs.setup.outputs.version }}
+      VERSION: ${{ needs.setup.outputs.semantic_version || needs.setup.outputs.version }}
       BRANCH_NAME: ${{ needs.setup.outputs.branchName }}
       BUILD_BASE: ${{ needs.setup.outputs.build_base }}
       BUILD_BUILD: ${{ needs.setup.outputs.build_build }}
       BUILD_SM: ${{ needs.setup.outputs.build_sm }}
       SKIP_RELEASE_MAIN_BUILD: ${{ needs.setup.outputs.skip_release_main_build }}
-      RELEASE_AS_LATEST: ${{ needs.setup.outputs.release_as_latest }}
+      RELEASE_AS_LATEST: ${{ needs.setup.outputs.release_as_latest || needs.setup.outputs.is_release }}
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download AssemblyInfo.cs
+        if: needs.semantic-release.outputs.new_release_published == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: assembly-info
+          path: StreamMaster.API/
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
