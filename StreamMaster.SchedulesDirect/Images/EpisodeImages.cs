@@ -132,15 +132,6 @@ public class EpisodeImages(
 
             if (artworks.Count > 0)
             {
-                //MxfProgram? mfxProgram = programRepository.FindProgram(response.ProgramId);
-                //if (mfxProgram != null)
-                //{
-                //    mfxProgram.AddArtworks(artworks);
-                //}
-                //else
-                //{
-                //    programRepository.SetProgramLogos(response.ProgramId, artworks);
-                //}
                 if (programRepository.SetProgramLogos(response.ProgramId, artworks))
                 {
                     string artworkJson = JsonSerializer.Serialize(artworks);
