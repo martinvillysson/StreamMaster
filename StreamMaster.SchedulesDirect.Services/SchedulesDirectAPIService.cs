@@ -6,6 +6,8 @@ namespace StreamMaster.SchedulesDirect.Services;
 
 public class SchedulesDirectAPIService(ISchedulesDirectRepository schedulesDirectRepository, IHttpService httpService) : ISchedulesDirectAPIService
 {
+    public bool IsReady => httpService.IsReady;
+
     // Metadata-related methods
     public async Task<List<CountryData>?> GetAvailableCountriesAsync(CancellationToken cancellationToken)
     {

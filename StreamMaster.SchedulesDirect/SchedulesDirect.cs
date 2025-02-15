@@ -5,6 +5,7 @@ using StreamMaster.Domain.API;
 using StreamMaster.Domain.Helpers;
 using StreamMaster.Domain.Logging;
 using StreamMaster.Domain.Models;
+
 namespace StreamMaster.SchedulesDirect;
 
 public partial class SchedulesDirect(
@@ -53,7 +54,7 @@ public partial class SchedulesDirect(
         {
             await _syncSemaphore.WaitAsync(cancellationToken);
 
-            if (cancellationToken.IsCancellationRequested || !sdSettings.CurrentValue.SDEnabled)
+            if (cancellationToken.IsCancellationRequested || !sdSettings.CurrentValue.SDEnabled || !schedulesDirectAPI.IsReady)
             {
                 jobManager.SetSuccessful();
                 return APIResponse.Ok;
@@ -130,10 +131,7 @@ public partial class SchedulesDirect(
                     await dataRefreshService.RefreshSchedulesDirect();
                 }
 
-                //ClearAllCaches();
                 schedulesDirectDataService.Reset(EPGHelper.SchedulesDirectId);
-
-                //ResetAllEPGCaches();
 
                 logger.LogInformation("Completed Schedules Direct update execution. SUCCESS.");
                 jobManager.SetSuccessful();
@@ -165,17 +163,9 @@ public partial class SchedulesDirect(
         logger.LogInformation("Completed save of XMLTV file to \"{BuildInfo.SDXMLFile}\". Size: {FileUtil.BytesToString(fileInfo.Length)}", BuildInfo.SDXMLFile, FileUtil.BytesToString(fileInfo.Length));
         logger.LogDebug("Generated XMLTV contains {xmltv.Channels.Count} channels, {xmltv.Programs.Count} programs, and {imageCount} distinct image links.", xmltv.Channels.Count, xmltv.Programs.Count, imageCount);
     }
+
     public void ResetAllEPGCaches()
     {
-        //ClearAllCaches();
-        //descriptions.ResetCache();
-        //lineups.ResetCache();
-        //schedules.ResetCache();
-        //programs.ResetCache();
-        //movieImages.ResetCache();
-        //seriesImages.ResetCache();
-        //seasonImages.ResetCache();
-        //sportsImages.ResetCache();
         schedulesDirectDataService.Reset(EPGHelper.SchedulesDirectId);
     }
 

@@ -6,17 +6,20 @@ using System.Text.Json;
 
 using StreamMaster.Domain.Configuration;
 using StreamMaster.Domain.Extensions;
+using StreamMaster.Domain.Helpers;
+using StreamMaster.Domain.Services;
 
 namespace StreamMaster.SchedulesDirect.Services;
 
-public class HttpService(ILogger<HttpService> logger, IOptionsMonitor<SDSettings> sdSettings, IOptionsMonitor<Setting> settings) : IHttpService
+public class HttpService(ILogger<HttpService> logger, IOptionsMonitor<SDSettings> sdSettings, IOptionsMonitor<Setting> settings, IDataRefreshService dataRefreshService) : IHttpService
 {
     private readonly HttpClient _httpClient = CreateHttpClient(settings);
+    private readonly SemaphoreSlim _tokenSemaphore = new(1, 1);
 
     public string? Token { get; private set; }
     public DateTime TokenTimestamp { get; private set; }
     public bool GoodToken { get; private set; }
-    private readonly SemaphoreSlim _tokenSemaphore = new(1, 1);
+    public bool IsReady => sdSettings.CurrentValue.TokenErrorTimestamp < SMDT.UtcNow;
 
     public async Task<T?> SendRequestAsync<T>(APIMethod method, string endpoint, object? payload = null, CancellationToken cancellationToken = default)
     {
@@ -133,14 +136,19 @@ public class HttpService(ILogger<HttpService> logger, IOptionsMonitor<SDSettings
                         break;
 
                     case SDHttpResponseCode.TOKEN_MISSING:
-                    case SDHttpResponseCode.INVALID_USER:
                     case SDHttpResponseCode.TOKEN_INVALID:
+                    case SDHttpResponseCode.INVALID_USER:
                     case SDHttpResponseCode.TOKEN_EXPIRED:
                     case SDHttpResponseCode.TOKEN_DUPLICATED:
                     case SDHttpResponseCode.UNKNOWN_USER:
                         response.StatusCode = HttpStatusCode.Unauthorized;
                         response.ReasonPhrase = "Unauthorized";
-                        await RefreshTokenAsync(CancellationToken.None);
+                        this.ClearToken();  // Changed from RefreshTokenAsync
+                        break;
+
+                    case SDHttpResponseCode.TOO_MANY_LOGINS:
+                        response.StatusCode = HttpStatusCode.Locked;
+                        response.ReasonPhrase = "Locked";
                         break;
                 }
             }
@@ -171,6 +179,13 @@ public class HttpService(ILogger<HttpService> logger, IOptionsMonitor<SDSettings
     public async Task<bool> RefreshTokenAsync(CancellationToken cancellationToken)
     {
         await _tokenSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        if (!IsReady)
+        {
+            GoodToken = false;
+            return false;
+        }
+
         try
         {
             if (SMDT.UtcNow - TokenTimestamp < TimeSpan.FromMinutes(1))
@@ -194,28 +209,33 @@ public class HttpService(ILogger<HttpService> logger, IOptionsMonitor<SDSettings
                 cancellationToken
             ).ConfigureAwait(false);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                logger.LogError("Failed to fetch token. Status code: {StatusCode}", response.StatusCode);
-                throw new TokenRefreshException($"Failed to refresh token. Status code: {response.StatusCode}");
-                //return false;
-            }
-
             TokenResponse? tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>(cancellationToken: cancellationToken);
-            if (tokenResponse?.Code == 0 && !string.IsNullOrEmpty(tokenResponse.Token))
+            if (response.IsSuccessStatusCode)
             {
-                Token = tokenResponse.Token;
-                TokenTimestamp = tokenResponse.Datetime;
-                GoodToken = true;
+                if (tokenResponse?.Code == 0 && !string.IsNullOrEmpty(tokenResponse.Token))
+                {
+                    Token = tokenResponse.Token;
+                    TokenTimestamp = tokenResponse.Datetime;
+                    GoodToken = true;
 
-                _httpClient.DefaultRequestHeaders.Remove("token");
-                _httpClient.DefaultRequestHeaders.Add("token", Token);
+                    _httpClient.DefaultRequestHeaders.Remove("token");
+                    _httpClient.DefaultRequestHeaders.Add("token", Token);
 
-                logger.LogInformation("Token refreshed successfully. Token={Token[..5]}...", Token[..5]);
-                return true;
+                    logger.LogInformation("Token refreshed successfully. Token={Token[..5]}...", Token[..5]);
+                    sdSettings.CurrentValue.TokenErrorTimestamp = DateTime.MinValue;
+                    SettingsHelper.UpdateSetting(sdSettings.CurrentValue);
+                    await dataRefreshService.RefreshSDReady();
+                    return true;
+                }
             }
 
-            logger.LogError("Failed to refresh token. Error code: {Code}", tokenResponse?.Code);
+            string content = await response.Content.ReadAsStringAsync(cancellationToken);
+            HttpResponseMessage httpResponse = await HandleHttpResponseError(response, content);
+
+            sdSettings.CurrentValue.TokenErrorTimestamp = tokenResponse == null || tokenResponse.Code == 4004 || tokenResponse.Code == 4009 || tokenResponse.Code == 4005 ? SMDT.UtcNow.AddHours(24.0) : SMDT.UtcNow.AddHours(1.0);
+            SettingsHelper.UpdateSetting(sdSettings.CurrentValue);
+            await dataRefreshService.RefreshSDReady();
+            logger.LogError("Failed to fetch token. Status code: {StatusCode} {reason} {message}", httpResponse.StatusCode, httpResponse.ReasonPhrase, tokenResponse?.Message ?? "");
             return false;
         }
         finally
