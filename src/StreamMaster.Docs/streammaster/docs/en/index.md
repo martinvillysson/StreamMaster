@@ -6,8 +6,6 @@
 
 This wiki is dedicated to providing information and resources for **StreamMaster**, the premier video proxy streaming platform.
 
-[![Sponsor this project](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink)](https://www.patreon.com/user?u=52683080)
-
 ---
 
 ## Features
