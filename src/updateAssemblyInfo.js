@@ -30,7 +30,7 @@ const sha = process.argv[3];
 const branch = process.argv[4];
 
 const normalizedVersion = normalizeVersion(version);
-const filePath = "./StreamMaster.API/AssemblyInfo.cs";
+const filePath = "./src/StreamMaster.API/AssemblyInfo.cs";
 
 const content = `
 using System.Reflection;
