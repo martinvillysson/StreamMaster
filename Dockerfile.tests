@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS test
+ARG TARGETPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETVARIANT
+
+WORKDIR /src
+COPY . .
+
+RUN echo "Running tests..." && \
+    for project in $(find src/tests -type f -name "*.csproj"); do \
+        echo "Found test project: $project" && \
+        echo "Testing $project..." && \
+        dotnet test "$project" -a $TARGETARCH -c Debug --verbosity minimal; \
+    done
