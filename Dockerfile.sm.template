@@ -2,22 +2,20 @@ ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG BUILDPLATFORM
 ENV TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64}
-WORKDIR /src
 
-# Copy all files into the image
-COPY . .
+# Copy only the src directory
+COPY src /src
 
 # Build UI
-WORKDIR /src/StreamMaster.WebUI
 RUN echo "Building frontend..." && \
-    npm install --silent && \
-    npm run build --silent && \
-    mkdir -p /src/StreamMaster.API/wwwroot && \
-    cp -r dist/* /src/StreamMaster.API/wwwroot/
+    cd /src/StreamMaster.WebUI && \
+    npm install && \
+    npm run build && \
+    cp -rpv dist/* ../StreamMaster.API/wwwroot/
 
 # Build and publish API
-WORKDIR /src/StreamMaster.API
-RUN dotnet restore "StreamMaster.API.csproj" -a $TARGETARCH --verbosity m && \
+RUN cd /src/StreamMaster.API && \
+    dotnet restore "StreamMaster.API.csproj" -a $TARGETARCH --verbosity m && \
     dotnet publish "StreamMaster.API.csproj" -c Debug -o /app/publish /p:UseAppHost=false -a $TARGETARCH --verbosity m
 
 # Verify the wwwroot directory contents
