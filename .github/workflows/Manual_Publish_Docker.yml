@@ -77,17 +77,22 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          # Delete the local tag if it exists
-          git tag -l "v*" | xargs -r git tag -d
-          # Fetch all tags from remote
-          git fetch --tags
-          # Run semantic-release with --dry-run first to check if a release would be created
-          if npx semantic-release --dry-run; then
-            npx semantic-release
+
+          # Configure git user
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # Fetch only the latest tag instead of all tags
+          git fetch --depth=1 origin refs/tags/*:refs/tags/*
+
+          # Run semantic-release with force flag
+          if npx semantic-release; then
+            # Force push to handle any tag conflicts on re-runs
+            git push --follow-tags --force origin HEAD:${{ github.ref }}
           else
             # If no new release would be created, set the outputs manually
             echo "new_release_published=false" >> $GITHUB_OUTPUT
-            # Get the latest tag as the version
+            # Get the latest tag without requiring all tags
             LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
             if [ ! -z "$LATEST_TAG" ]; then
               echo "new_release_version=${LATEST_TAG#v}" >> $GITHUB_OUTPUT
