@@ -129,7 +129,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Generate code hash
+        id: hash
+        run: |
+          # Create hash of all source and test files
+          find src -type f \( -name "*.cs" -o -name "*.csproj" -o -name "*.json" -o -name "*.xml" \) -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1 > code_hash.txt
+          echo "code_hash=$(cat code_hash.txt)" >> $GITHUB_OUTPUT
+
+      - name: Check code hash cache
+        id: cache-hash
+        uses: actions/cache@v4
+        with:
+          path: code_hash.txt
+          key: ${{ runner.os }}-code-${{ steps.hash.outputs.code_hash }}
+
       - name: Set up Docker Buildx
+        if: steps.cache-hash.outputs.cache-hit != 'true'
         uses: docker/setup-buildx-action@v2
 
       - name: Run Tests
