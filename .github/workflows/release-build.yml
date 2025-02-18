@@ -1,0 +1,108 @@
+name: Release Docker Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_all:
+        description: 'Build all steps (includes main build unless skipped)'
+        type: boolean
+        default: false
+      build_base:
+        type: boolean
+        default: false
+      build_build:
+        type: boolean
+        default: false
+      build_sm:
+        type: boolean
+        default: false
+      skip_release_main_build:
+        type: boolean
+        default: false
+      release_as_latest:
+        type: boolean
+        default: false
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  semantic-release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          set -e
+          npm ci
+
+      - name: Copy release config
+        run: |
+          set -e
+          if [[ "${{ inputs.release_as_latest }}" == "true" ]]; then
+            cp release.config.release.cjs release.config.cjs
+          else
+            cp release.config.norelease.cjs release.config.cjs
+          fi
+
+      - name: Semantic Release
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+
+          # Configure git user
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # Fetch only the latest tag instead of all tags
+          git fetch --depth=1 origin refs/tags/*:refs/tags/*
+
+          # Run semantic-release with force flag
+          if npx semantic-release; then
+            # Force push to handle any tag conflicts on re-runs
+            git push --follow-tags --force origin HEAD:${{ github.ref }}
+          else
+            # If no new release would be created, set the outputs manually
+            echo "new_release_published=false" >> $GITHUB_OUTPUT
+            # Get the latest tag without requiring all tags
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ ! -z "$LATEST_TAG" ]; then
+              echo "new_release_version=${LATEST_TAG#v}" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+  build:
+    needs: semantic-release
+    uses: ./.github/workflows/docker-build-shared.yml
+    with:
+      version: ${{ needs.semantic-release.outputs.new_release_version || github.sha }}
+      build_all: ${{ inputs.build_all || github.event_name == 'pull_request' }}
+      build_base: ${{ inputs.build_base }}
+      build_build: ${{ inputs.build_build }}
+      build_sm: ${{ inputs.build_sm }}
+      skip_release_main_build: ${{ inputs.skip_release_main_build }}
+      release_as_latest: ${{ inputs.release_as_latest || needs.semantic-release.outputs.new_release_published == 'true' }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}

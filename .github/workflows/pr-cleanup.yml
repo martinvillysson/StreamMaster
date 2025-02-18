@@ -1,0 +1,33 @@
+name: PR Cleanup
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  packages: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    env:
+      PR_VERSION: pr-${{ github.event.pull_request.number }}
+      BASE_IMAGE_NAME: ${{ github.repository_owner }}/streammaster-builds
+      FINAL_IMAGE_NAME: ${{ github.repository_owner }}/streammaster
+    steps:
+      - name: Delete PR Images
+        run: |
+          # Delete all related images
+          for suffix in "" "-base" "-build" "-sm"; do
+            IMAGE_VERSION="${PR_VERSION}${suffix}"
+
+            # Delete from streammaster-builds repository
+            gh api --method DELETE "/user/packages/container/${BASE_IMAGE_NAME}/versions/${IMAGE_VERSION}" || true
+
+            # Delete from main streammaster repository
+            if [ -z "$suffix" ]; then
+              gh api --method DELETE "/user/packages/container/${FINAL_IMAGE_NAME}/versions/${IMAGE_VERSION}" || true
+            fi
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
