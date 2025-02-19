@@ -33,7 +33,7 @@ permissions:
 
 jobs:
   semantic-release:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -59,7 +59,7 @@ jobs:
       - name: Copy release config
         run: |
           set -e
-          if [[ "${{ inputs.release_as_latest }}" == "true" ]]; then
+          if [[ "${{ github.event_name == 'workflow_dispatch' && inputs.release_as_latest || false }}" == "true" ]]; then
             cp release.config.release.cjs release.config.cjs
           else
             cp release.config.norelease.cjs release.config.cjs
@@ -98,11 +98,11 @@ jobs:
     uses: ./.github/workflows/docker-build-shared.yml
     with:
       version: ${{ needs.semantic-release.outputs.new_release_version || github.sha }}
-      build_all: ${{ inputs.build_all || github.event_name == 'pull_request' }}
-      build_base: ${{ inputs.build_base }}
-      build_build: ${{ inputs.build_build }}
-      build_sm: ${{ inputs.build_sm }}
-      skip_release_main_build: ${{ inputs.skip_release_main_build }}
-      release_as_latest: ${{ inputs.release_as_latest || needs.semantic-release.outputs.new_release_published == 'true' }}
+      build_all: ${{ github.event_name == 'workflow_dispatch' && inputs.build_all || github.event_name == 'pull_request' }}
+      build_base: ${{ github.event_name == 'workflow_dispatch' && inputs.build_base || false }}
+      build_build: ${{ github.event_name == 'workflow_dispatch' && inputs.build_build || false }}
+      build_sm: ${{ github.event_name == 'workflow_dispatch' && inputs.build_sm || false }}
+      skip_release_main_build: ${{ github.event_name == 'workflow_dispatch' && inputs.skip_release_main_build || false }}
+      release_as_latest: ${{ github.event_name == 'workflow_dispatch' && inputs.release_as_latest || needs.semantic-release.outputs.new_release_published == 'true' }}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
