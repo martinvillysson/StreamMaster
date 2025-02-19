@@ -22,11 +22,7 @@ namespace StreamMaster.Domain.Services
 
         Task<(FileStream? fileStream, string? FileName, string? ContentType)> GetLogoAsync(string fileName, CancellationToken cancellationToken);
 
-        //Task<(FileStream? fileStream, string? FileName, string? ContentType)> GetLogoFromCacheAsync(string source, SMFileTypes fileType, CancellationToken cancellationToken);
         Task<(FileStream? fileStream, string? FileName, string? ContentType)> GetLogoForChannelAsync(int SMChannelId, CancellationToken cancellationToken);
-
-        //string GetLogoUrl2(string logoSource, SMFileTypes logoType);
-        List<XmltvProgramme> GetXmltvProgrammeForPeriod(VideoStreamConfig videoStreamConfig, DateTime startDate, int days, string baseUrl);
 
         /// <summary>
         /// Adds a new logo based on the specified artwork URI and title.
@@ -41,12 +37,6 @@ namespace StreamMaster.Domain.Services
           string title,
           SMFileTypes sMFileType,
           bool HashSource = false);
-
-        /// <summary>
-        /// Adds a new logo using the specified <see cref="LogoFileDto"/>.
-        /// </summary>
-        /// <param name="logoFile">The logo file DTO containing logo details.</param>
-        void CacheLogo(CustomLogoDto logoFile, bool OG = false);
 
         /// <summary>
         /// Builds the logo cache using the current streams asynchronously.

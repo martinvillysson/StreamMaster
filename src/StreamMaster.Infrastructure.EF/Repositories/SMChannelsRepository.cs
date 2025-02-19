@@ -605,9 +605,11 @@ public class SMChannelsRepository(ILogger<SMChannelsRepository> intLogger, IEpgM
             string.IsNullOrWhiteSpace(logo) ||
                 !(
                 logo.StartsWithIgnoreCase("http") ||
-                 logo.StartsWithIgnoreCase("/images/") ||
+                logo.StartsWithIgnoreCase("/images/") ||
                 logo.StartsWithIgnoreCase("data:") ||
-                logo.StartsWithIgnoreCase("/api/files/cu/")
+                logo.StartsWithIgnoreCase("/api/files/lc/") ||
+                logo.StartsWithIgnoreCase("/api/files/cu/") ||
+                logo.StartsWithIgnoreCase("/api/files/tv/")
                 )
              )
         {
@@ -638,10 +640,11 @@ public class SMChannelsRepository(ILogger<SMChannelsRepository> intLogger, IEpgM
         channel.Logo = logo;
 
         Update(channel);
-        _ = await SaveChangesAsync();
+        await SaveChangesAsync();
 
         return APIResponse.Success;
     }
+
 
     public async Task<APIResponse> SetSMChannelName(int sMChannelId, string name)
     {

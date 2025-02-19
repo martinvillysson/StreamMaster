@@ -1,10 +1,12 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Globalization;
 
 using Microsoft.AspNetCore.Http;
 
 using StreamMaster.Domain.Crypto;
 using StreamMaster.Domain.XML;
+using StreamMaster.Domain.XmltvXml;
 
 namespace StreamMaster.Application.EPG.Commands;
 
@@ -248,7 +250,7 @@ public class XMLTVBuilder(
 
             channels.Add(channel);
 
-            List<XmltvProgramme> newProgrammes = logoService.GetXmltvProgrammeForPeriod(config, SMDT.UtcNow, sdSettingsMonitor.CurrentValue.SDEPGDays, config.BaseUrl);
+            List<XmltvProgramme> newProgrammes = GetXmltvProgrammeForPeriod(config, SMDT.UtcNow, sdSettingsMonitor.CurrentValue.SDEPGDays, config.BaseUrl);
             foreach (XmltvProgramme programme in newProgrammes)
             {
                 programme.Channel = config.OutputProfile!.Id;
@@ -259,6 +261,23 @@ public class XMLTVBuilder(
         // Add results to the shared collections after parallel processing
         xmlTv.Channels.AddRange(channels);
         xmlTv.Programs.AddRange(programs);
+    }
+
+    public List<XmltvProgramme> GetXmltvProgrammeForPeriod(VideoStreamConfig videoStreamConfig, DateTime startDate, int days, string baseUrl)
+    {
+        List<(Movie Movie, DateTime StartTime, DateTime EndTime)> moviesForPeriod = customPlayListBuilder.GetMoviesForPeriod(videoStreamConfig.Name, startDate, days);
+        List<XmltvProgramme> ret = [];
+        foreach ((Movie Movie, DateTime StartTime, DateTime EndTime) x in moviesForPeriod)
+        {
+            var xmltvProgramme = XmltvProgrammeConverter.ConvertMovieToXmltvProgramme(x.Movie, videoStreamConfig.EPGId, x.StartTime, x.EndTime);
+            if (x.Movie.Thumb is not null && !string.IsNullOrEmpty(x.Movie.Thumb.Text))
+            {
+                string src = $"/api/files/smChannelLogo/{videoStreamConfig.ChannelNumber}";
+                xmltvProgramme.Icons = [new XmltvIcon { Src = src }];
+            }
+            ret.Add(xmltvProgramme);
+        }
+        return ret;
     }
 
     private (List<XmltvChannel> xmltvChannels, List<XmltvProgramme> programs) ProcessXML(XMLTV xml, List<VideoStreamConfig> videoStreamConfigs)
