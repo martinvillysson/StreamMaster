@@ -88,11 +88,14 @@ jobs:
           else
             # If no new release would be created, set the outputs manually
             echo "new_release_published=false" >> $GITHUB_OUTPUT
-            # Get the latest tag without requiring all tags
-            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-            if [ ! -z "$LATEST_TAG" ]; then
+          fi
+          
+          # Get the latest tag without requiring all tags
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ ! -z "$LATEST_TAG" ]; then
               echo "new_release_version=${LATEST_TAG#v}" >> $GITHUB_OUTPUT
-            fi
+          else
+              echo "new_release_version=${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 
   build:

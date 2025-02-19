@@ -132,8 +132,16 @@ jobs:
           echo "FROM ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ inputs.version }}-sm AS sm" > Dockerfile
           echo "FROM ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ inputs.version }}-base AS base" >> Dockerfile
           cat Dockerfile.template >> Dockerfile
+
+          TAGS="-t ${{ env.REGISTRY }}/${{ env.FINAL_IMAGE_NAME }}:${{ inputs.version }}"
+
+          if [[ "${{ inputs.release_as_latest }}" == "true" ]]; then
+            TAGS="$TAGS -t ${{ env.REGISTRY }}/${{ env.FINAL_IMAGE_NAME }}:latest"
+          else
+            TAGS="$TAGS -t ${{ env.REGISTRY }}/${{ env.FINAL_IMAGE_NAME }}:$(echo "${{ needs.setup.outputs.branchName }}" | tr '/' '-')"
+          fi
+
           docker buildx build --platform linux/amd64,linux/arm64 \
-            -t ${{ env.REGISTRY }}/${{ env.FINAL_IMAGE_NAME }}:${{ inputs.version }} \
-            -t ${{ env.REGISTRY }}/${{ env.FINAL_IMAGE_NAME }}:$(echo "${{ needs.setup.outputs.branchName }}" | tr '/' '-') \
+            $TAGS \
             -f Dockerfile --push .
 
