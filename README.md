@@ -3,9 +3,14 @@
     <H1 align="center" width="100%">StreamMaster</H1>
 </p>
 
-> A powerful M3U proxy and stream management platform for Plex DVR, Emby, and Jellyfin Live TV
+> A comprehensive IPTV management platform for organizing and streaming public broadcast content through Plex DVR, Emby, and Jellyfin Live TV
 
 ## Quick Start 🚀
+
+> [!TIP]  
+> The wonderful [IPTV-org project](https://github.com/iptv-org/iptv) maintains a list of publicly available channels from all over the world 🌍📺 
+> 
+> TV logos are also publicly available in the [tv-logos repository](https://github.com/tv-logo/tv-logos)
 
 Docker compose example:
 ```yaml
@@ -20,18 +25,21 @@ services:
       - ~/streammaster:/config
       - ~/streammaster/tv-logos:/config/tv-logos
 ```
+
 View available releases at our [container registry](https://github.com/carlreid/StreamMaster/pkgs/container/streammaster).
 
 ## Key Features ⭐
 
-- **M3U and EPG Management**: Import multiple files via URL or file with automatic refresh
-- **Logo Customization**: Cached logos with local directory support for TV logos
-- **Performance Analytics**: Track streaming performance with comprehensive statistics
-- **Virtual HDHomeRun**: Create multiple virtual devices with custom configurations
-- **Platform Integration**: Seamless compatibility with Plex, Emby, and Jellyfin
-- **Modern Stack**: Built with React and .NET for optimal performance
-- **Advanced Proxying**: RAM-based operations with failover stream support
-- **Efficient Streaming**: Single backend stream serves multiple device in your home
+- **Public IPTV Integration**: Easily manage free-to-air and public broadcast streams from sources like [iptv-org](https://iptv-org.github.io/)
+- **M3U and EPG Management**: Import and organize multiple public playlists with automatic updates
+- **Channel Organization**: Categorize streams by country, language, or content type
+- **Logo Enhancement**: Cached channel logos with local directory support for consistent branding
+- **Performance Analytics**: Monitor stream health and viewing statistics
+- **Virtual HDHomeRun**: Create virtual tuners for better media server integration
+- **Platform Compatibility**: Seamless integration with Plex, Emby, and Jellyfin
+- **Modern Architecture**: Built with React and .NET for reliable performance
+- **Smart Proxying**: RAM-based operations with fallback streams for reliability
+- **Resource Optimization**: Single backend stream efficiently serves multiple devices
 
 ## Documentation 📚
 
@@ -42,7 +50,6 @@ View available releases at our [container registry](https://github.com/carlreid/
 - **Issues**: Bug reports and feature requests ([create an issue](https://github.com/carlreid/StreamMaster/issues))
 - **Discussions**: Community feedback and ideas ([open a discussion](https://github.com/carlreid/StreamMaster/discussions))
 - **Development**: Pull requests welcome
-
 
 ---
 
