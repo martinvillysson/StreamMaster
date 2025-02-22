@@ -39,6 +39,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Mirror images
+        shell: bash
         run: |
           set -euo pipefail
           DOCKERHUB_USER="${{ secrets.DOCKERHUB_USERNAME }}"
@@ -78,24 +79,11 @@ jobs:
             if ! curl -sSfL "https://hub.docker.com/v2/repositories/$DOCKERHUB_USER/streammaster/tags/$TAG/" >/dev/null 2>&1; then
               echo "Mirroring tag: ${TAG}"
 
-              # Pull the image manifest
-              docker buildx imagetools inspect ghcr.io/$GH_OWNER/streammaster:${TAG}
+              SOURCE_IMAGE="ghcr.io/$GH_OWNER/streammaster:${TAG}"
+              TARGET_IMAGE="$DOCKERHUB_USER/streammaster:${TAG}"
 
-              # Pull and push for each platform
-              for PLATFORM in linux/amd64 linux/arm64; do
-                echo "Processing platform: $PLATFORM"
-                docker pull --platform $PLATFORM ghcr.io/$GH_OWNER/streammaster:${TAG}
-                docker tag ghcr.io/$GH_OWNER/streammaster:${TAG} $DOCKERHUB_USER/streammaster:${TAG}
-
-                # Push with retries
-                for attempt in {1..3}; do
-                  if docker push $DOCKERHUB_USER/streammaster:${TAG}; then
-                    break
-                  fi
-                  echo "Push attempt $attempt failed, retrying..."
-                  sleep $((attempt * 5))
-                done
-              done
+              # Pull and create the target image directly
+              docker buildx imagetools create -t $TARGET_IMAGE $SOURCE_IMAGE
 
               sleep 5  # Rate limit protection
             else
