@@ -46,6 +46,12 @@ jobs:
           GH_OWNER="${{ github.repository_owner }}"
           SPECIFIC_TAG="${{ inputs.tag }}"
 
+          # Function to get image digest
+          get_digest() {
+            local image="$1"
+            docker buildx imagetools inspect "$image" | grep -i "Digest:" | awk '{print $2}'
+          }
+
           if [ -n "$SPECIFIC_TAG" ]; then
             echo "Processing single tag: $SPECIFIC_TAG"
             TAGS="$SPECIFIC_TAG"
@@ -74,6 +80,35 @@ jobs:
           echo "Discovered tags:"
           echo "$TAGS"
 
+          # Process latest tag first if it exists
+          if echo "$TAGS" | grep -q "^latest$"; then
+            SOURCE_IMAGE="ghcr.io/$GH_OWNER/streammaster:latest"
+            TARGET_IMAGE="$DOCKERHUB_USER/streammaster:latest"
+
+            # Always check latest tag digest
+            SOURCE_DIGEST=$(get_digest "$SOURCE_IMAGE")
+
+            if curl -sSfL "https://hub.docker.com/v2/repositories/$DOCKERHUB_USER/streammaster/tags/latest/" >/dev/null 2>&1; then
+              TARGET_DIGEST=$(get_digest "$TARGET_IMAGE")
+
+              if [ "$SOURCE_DIGEST" != "$TARGET_DIGEST" ]; then
+                echo "Latest tag differs, updating..."
+                docker buildx imagetools create -t "$TARGET_IMAGE" "$SOURCE_IMAGE"
+                sleep 5  # Rate limit protection
+              else
+                echo "Latest tag is up to date"
+              fi
+            else
+              echo "Latest tag doesn't exist in Docker Hub, creating..."
+              docker buildx imagetools create -t "$TARGET_IMAGE" "$SOURCE_IMAGE"
+              sleep 5  # Rate limit protection
+            fi
+
+            # Remove latest from TAGS to avoid processing it twice
+            TAGS=$(echo "$TAGS" | grep -v "^latest$")
+          fi
+
+          # Process remaining tags
           for TAG in $TAGS; do
             # Check existence using Docker Hub API
             if ! curl -sSfL "https://hub.docker.com/v2/repositories/$DOCKERHUB_USER/streammaster/tags/$TAG/" >/dev/null 2>&1; then
@@ -83,7 +118,7 @@ jobs:
               TARGET_IMAGE="$DOCKERHUB_USER/streammaster:${TAG}"
 
               # Pull and create the target image directly
-              docker buildx imagetools create -t $TARGET_IMAGE $SOURCE_IMAGE
+              docker buildx imagetools create -t "$TARGET_IMAGE" "$SOURCE_IMAGE"
 
               sleep 5  # Rate limit protection
             else
