@@ -133,3 +133,13 @@ jobs:
               echo "Tag $TAG already exists in Docker Hub, skipping"
             fi
           done
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/streammaster
