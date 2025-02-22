@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-
+using MediatR;
 using Microsoft.AspNetCore.Http;
 
 using StreamMaster.Application.Interfaces;
@@ -27,6 +27,7 @@ public class RepositoryWrapper(
     PGSQLRepositoryContext repositoryContext,
     IMapper mapper,
     ICacheManager cacheManager,
+    ISender sender,
     IEpgMatcher epgMatcher,
     IServiceProvider serviceProvider,
     ICryptoService cryptoService,
@@ -90,7 +91,7 @@ public class RepositoryWrapper(
     {
         get
         {
-            _smChannel ??= new SMChannelsRepository(SMChannelLogger, epgMatcher, logoService, cacheManager, imageDownloadService, imageDownloadQueue, serviceProvider, this, repositoryContext, mapper, intSettings, intProfileSettings, schedulesDirectDataService);
+            _smChannel ??= new SMChannelsRepository(SMChannelLogger, sender, epgMatcher, logoService, cacheManager, imageDownloadService, imageDownloadQueue, serviceProvider, this, repositoryContext, mapper, intSettings, intProfileSettings, schedulesDirectDataService);
             return _smChannel;
         }
     }
