@@ -1,3 +1,13 @@
+## [0.9.3](https://github.com/carlreid/StreamMaster/compare/v0.9.2...v0.9.3) (2025-02-22)
+
+
+### Bug Fixes
+
+* `main` and `latest` as tracking tags ([55597b6](https://github.com/carlreid/StreamMaster/commit/55597b61ca6a3f851863dad7fc73b829b5d034cd))
+* Correct link to Docker Hub ([63cf991](https://github.com/carlreid/StreamMaster/commit/63cf991fc6d3fe2507401e48dc6d53730737eda5))
+* No release script to single commit and tag ([c037aeb](https://github.com/carlreid/StreamMaster/commit/c037aeb43dca55dc888df7ebdfcfbb42f5144ca9))
+* Run after main workflow name ([d3d8d8e](https://github.com/carlreid/StreamMaster/commit/d3d8d8ee2511d4666b1cb9e857249280f656827b))
+
 ## [0.9.1](https://github.com/carlreid/StreamMaster/compare/v0.9.0...v0.9.1) (2025-02-22)
 
 
