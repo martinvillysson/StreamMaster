@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,6 +20,7 @@ public static class ConfigureServices
                 {
                     _ = pgsqlOptions.MigrationsAssembly(typeof(PGSQLRepositoryContext).Assembly.FullName);
                     _ = pgsqlOptions.UseNodaTime();
+                    _ = pgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                 });
             }
         );
