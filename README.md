@@ -26,7 +26,10 @@ services:
       - ~/streammaster/tv-logos:/config/tv-logos
 ```
 
-View available releases at our [container registry](https://github.com/carlreid/StreamMaster/pkgs/container/streammaster).
+> [!NOTE]  
+> You may also use `image: carlreid/streammaster:latest` if your platform can't pull from GitHub Container Registry (ghcr.io)
+
+View available releases at our [container registry](https://github.com/carlreid/StreamMaster/pkgs/container/streammaster) (or on [Docker Hub](https://hub.docker.com/repository/docker/carlreid/streammaster/general))
 
 ## Key Features ⭐
 
