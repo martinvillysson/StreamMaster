@@ -29,7 +29,7 @@ services:
 > [!NOTE]  
 > You may also use `image: carlreid/streammaster:latest` if your platform can't pull from GitHub Container Registry (ghcr.io)
 
-View available releases at our [container registry](https://github.com/carlreid/StreamMaster/pkgs/container/streammaster) (or on [Docker Hub](https://hub.docker.com/repository/docker/carlreid/streammaster/general))
+View available releases at our [container registry](https://github.com/carlreid/StreamMaster/pkgs/container/streammaster) (or on [Docker Hub](https://hub.docker.com/r/carlreid/streammaster))
 
 ## Key Features ⭐
 
