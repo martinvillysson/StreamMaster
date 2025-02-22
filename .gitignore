@@ -30,7 +30,6 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
-!src/StreamMaster.WebUI/lib/smAPI/Logs/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -348,16 +347,16 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-StreamMasterAPI/wwwroot/initialize.js
-StreamMasterAPI/wwwroot/initialize.js
-/StreamMasterAPI/wwwroot/initialize.js
-/StreamMasterAPI/devwwwroot
-/StreamMasterAPI/wwwroot
-/StreamMasterAPI/sd_token.json
-/StreamMasterAPI/dupes*
-StreamMaster.WebUI/package-lock.json
-StreamMaster.WebUI/package-lock.json
-StreamMaster.WebUI/deps.txt
+src/StreamMasterAPI/wwwroot/initialize.js
+src/StreamMasterAPI/wwwroot/initialize.js
+src//StreamMasterAPI/wwwroot/initialize.js
+src//StreamMasterAPI/devwwwroot
+src//StreamMasterAPI/wwwroot
+src//StreamMasterAPI/sd_token.json
+src//StreamMasterAPI/dupes*
+src/StreamMaster.WebUI/package-lock.json
+src/StreamMaster.WebUI/package-lock.json
+src/StreamMaster.WebUI/deps.txt
 build
 coverage
 dist
@@ -376,3 +375,7 @@ src/StreamMaster.Docs/venv/
 src/StreamMaster.Docs/.chatgpt-md-translator
 src/StreamMaster.WebUI/stats.html
 src/StreamMaster.Docs/streammaster/site/*
+
+# Do not ignore some file paths that are "Logs"
+!src/StreamMaster.Application/Logs/
+!src/StreamMaster.WebUI/lib/smAPI/Logs/
