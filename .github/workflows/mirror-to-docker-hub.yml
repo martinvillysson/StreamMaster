@@ -8,7 +8,7 @@ on:
         required: false
         type: string
   workflow_run:
-    workflows: ["Shared Docker Build"]
+    workflows: ["Release Docker Build"]
     types:
       - completed
 
