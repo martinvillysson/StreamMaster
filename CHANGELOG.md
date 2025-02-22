@@ -1,3 +1,16 @@
+# [0.9.0](https://github.com/carlreid/StreamMaster/compare/v0.8.1...v0.9.0) (2025-02-22)
+
+
+### Bug Fixes
+
+* Produce git commit and tag on same commit ([e375d2e](https://github.com/carlreid/StreamMaster/commit/e375d2eac4aef67d798cb5f1e698ffae7bacdf50))
+* Use `token` to re-fetch same `github.ref` ([28799d6](https://github.com/carlreid/StreamMaster/commit/28799d69514a9a554d47f157a4bb48c76f956429))
+
+
+### Features
+
+* Mirror images to Docker Hub ([5af71d2](https://github.com/carlreid/StreamMaster/commit/5af71d2a28307e9f8cb472c3947c4f6d5b5ee091))
+
 ## [0.16.5](https://github.com/carlreid/StreamMaster/compare/v0.16.4...v0.16.5) (2024-10-31)
 
 
