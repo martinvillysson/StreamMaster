@@ -4,7 +4,6 @@
 
 module.exports = {
   branches: [
-    // "+([0-9])?(.{+([0-9]),x}).x",
     {
       channel: "main",
       name: "main",
@@ -53,32 +52,28 @@ module.exports = {
       }
     },
     [
-      ("@semantic-release/changelog",
+      "@semantic-release/changelog",
       {
         changelogFile: "CHANGELOG.md"
-      })
+      }
     ],
     [
       "@semantic-release/exec",
       {
         verifyConditionsCmd: ":",
         prepareCmd:
-          "node src/updateAssemblyInfo.js ${nextRelease.version} ${nextRelease.gitHead} ${nextRelease.channel}",
-        publishCmd: [
-          "node src/updateAssemblyInfo.js ${nextRelease.version} ${nextRelease.gitHead} ${nextRelease.channel}",
-          "git add ./src/StreamMaster.API/AssemblyInfo.cs",
-          'git diff-index --quiet HEAD || git commit -m "chore: update AssemblyInfo.cs to version ${nextRelease.version}"'
-        ].join(" && ")
-      }
-    ],
-    [
-      "@semantic-release/github",
-      {
-        assets: ["CHANGELOG.md"]
+          "node src/updateAssemblyInfo.js ${nextRelease.version} ${nextRelease.gitHead} ${nextRelease.channel}"
       }
     ],
     [
       "@semantic-release/git",
+      {
+        assets: ["CHANGELOG.md", "src/StreamMaster.API/AssemblyInfo.cs"],
+        message: "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    [
+      "@semantic-release/github",
       {
         assets: ["CHANGELOG.md"]
       }
