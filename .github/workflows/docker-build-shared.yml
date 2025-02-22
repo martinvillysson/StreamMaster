@@ -50,6 +50,9 @@ jobs:
         with:
           ref: ${{ github.ref }}
           token: ${{ secrets.token }}
+          fetch-depth: 0
+          clean: true
+          fetch-tags: true
 
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0
@@ -65,6 +68,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          token: ${{ secrets.token }}
+          fetch-depth: 0
+          clean: true
+          fetch-tags: true
 
       - name: Generate code hash
         id: hash
@@ -97,7 +106,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          ref: ${{ github.ref }}
+          token: ${{ secrets.token }}
+          fetch-depth: 0
+          clean: true
+          fetch-tags: true
+          
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
