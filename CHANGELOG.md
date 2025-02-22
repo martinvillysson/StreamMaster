@@ -1,3 +1,10 @@
+## [0.9.1](https://github.com/carlreid/StreamMaster/compare/v0.9.0...v0.9.1) (2025-02-22)
+
+
+### Bug Fixes
+
+* Pull full history ([55650ab](https://github.com/carlreid/StreamMaster/commit/55650ab00ffb05c75757a67ef08a6d08d54eb7c6))
+
 # [0.9.0](https://github.com/carlreid/StreamMaster/compare/v0.8.1...v0.9.0) (2025-02-22)
 
 
