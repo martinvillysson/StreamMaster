@@ -45,11 +45,38 @@ jobs:
           DOCKERHUB_USER="${{ secrets.DOCKERHUB_USERNAME }}"
           GH_OWNER="${{ github.repository_owner }}"
           SPECIFIC_TAG="${{ inputs.tag }}"
+          TRACKING_TAGS="latest main"
 
           # Function to get image digest
           get_digest() {
             local image="$1"
             docker buildx imagetools inspect "$image" | grep -i "Digest:" | awk '{print $2}'
+          }
+
+          # Function to process tracking tags
+          process_tracking_tag() {
+            local tag="$1"
+            SOURCE_IMAGE="ghcr.io/$GH_OWNER/streammaster:$tag"
+            TARGET_IMAGE="$DOCKERHUB_USER/streammaster:$tag"
+
+            # Always check tracking tag digest
+            SOURCE_DIGEST=$(get_digest "$SOURCE_IMAGE")
+
+            if curl -sSfL "https://hub.docker.com/v2/repositories/$DOCKERHUB_USER/streammaster/tags/$tag/" >/dev/null 2>&1; then
+              TARGET_DIGEST=$(get_digest "$TARGET_IMAGE")
+
+              if [ "$SOURCE_DIGEST" != "$TARGET_DIGEST" ]; then
+                echo "$tag tag differs, updating..."
+                docker buildx imagetools create -t "$TARGET_IMAGE" "$SOURCE_IMAGE"
+                sleep 5  # Rate limit protection
+              else
+                echo "$tag tag is up to date"
+              fi
+            else
+              echo "$tag tag doesn't exist in Docker Hub, creating..."
+              docker buildx imagetools create -t "$TARGET_IMAGE" "$SOURCE_IMAGE"
+              sleep 5  # Rate limit protection
+            fi
           }
 
           if [ -n "$SPECIFIC_TAG" ]; then
@@ -80,33 +107,14 @@ jobs:
           echo "Discovered tags:"
           echo "$TAGS"
 
-          # Process latest tag first if it exists
-          if echo "$TAGS" | grep -q "^latest$"; then
-            SOURCE_IMAGE="ghcr.io/$GH_OWNER/streammaster:latest"
-            TARGET_IMAGE="$DOCKERHUB_USER/streammaster:latest"
-
-            # Always check latest tag digest
-            SOURCE_DIGEST=$(get_digest "$SOURCE_IMAGE")
-
-            if curl -sSfL "https://hub.docker.com/v2/repositories/$DOCKERHUB_USER/streammaster/tags/latest/" >/dev/null 2>&1; then
-              TARGET_DIGEST=$(get_digest "$TARGET_IMAGE")
-
-              if [ "$SOURCE_DIGEST" != "$TARGET_DIGEST" ]; then
-                echo "Latest tag differs, updating..."
-                docker buildx imagetools create -t "$TARGET_IMAGE" "$SOURCE_IMAGE"
-                sleep 5  # Rate limit protection
-              else
-                echo "Latest tag is up to date"
-              fi
-            else
-              echo "Latest tag doesn't exist in Docker Hub, creating..."
-              docker buildx imagetools create -t "$TARGET_IMAGE" "$SOURCE_IMAGE"
-              sleep 5  # Rate limit protection
+          # Process tracking tags first
+          for tracking_tag in $TRACKING_TAGS; do
+            if echo "$TAGS" | grep -q "^$tracking_tag$"; then
+              process_tracking_tag "$tracking_tag"
+              # Remove tracking tag from TAGS to avoid processing it twice
+              TAGS=$(echo "$TAGS" | grep -v "^$tracking_tag$")
             fi
-
-            # Remove latest from TAGS to avoid processing it twice
-            TAGS=$(echo "$TAGS" | grep -v "^latest$")
-          fi
+          done
 
           # Process remaining tags
           for TAG in $TAGS; do
