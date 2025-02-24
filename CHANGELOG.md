@@ -1,3 +1,10 @@
+## [0.10.1](https://github.com/carlreid/StreamMaster/compare/v0.10.0...v0.10.1) (2025-02-24)
+
+
+### Bug Fixes
+
+* Correctly handle different logo routes ([40a9c06](https://github.com/carlreid/StreamMaster/commit/40a9c066c3391808ac45cd61d5d4a290d835ad20))
+
 # [0.10.0](https://github.com/carlreid/StreamMaster/compare/v0.9.3...v0.10.0) (2025-02-24)
 
 
