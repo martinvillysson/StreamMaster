@@ -1,3 +1,13 @@
+## [0.10.2](https://github.com/carlreid/StreamMaster/compare/v0.10.1...v0.10.2) (2025-02-24)
+
+
+### Bug Fixes
+
+* `SMButton` was using the wrong class hook ([bfea17b](https://github.com/carlreid/StreamMaster/commit/bfea17b89114670106751bd539f8e4d8df0b7a1d))
+* added clear button back to drop down box, only show if selecting multiple options is available ([033d54b](https://github.com/carlreid/StreamMaster/commit/033d54bbe6973771de989e53bf4d26296242f972))
+* added clear button back to drop down box, only show if selecting multiple options is available ([37c648b](https://github.com/carlreid/StreamMaster/commit/37c648bc079372918b578b0a798599f038fe59aa))
+* added missing tooltip to dropdown filter button ([91f0ebb](https://github.com/carlreid/StreamMaster/commit/91f0ebbe927f0004401b10530cd91f56cabfc11b))
+
 ## [0.10.1](https://github.com/carlreid/StreamMaster/compare/v0.10.0...v0.10.1) (2025-02-24)
 
 
