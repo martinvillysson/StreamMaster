@@ -1,3 +1,10 @@
+# [0.10.0](https://github.com/carlreid/StreamMaster/compare/v0.9.3...v0.10.0) (2025-02-24)
+
+
+### Features
+
+* Improve program/logo handling in XMLTV ([faa3cb9](https://github.com/carlreid/StreamMaster/commit/faa3cb9b435daac95543e71bad3f7fbc4aff3163))
+
 ## [0.9.3](https://github.com/carlreid/StreamMaster/compare/v0.9.2...v0.9.3) (2025-02-22)
 
 
