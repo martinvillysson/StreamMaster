@@ -1,3 +1,10 @@
+# [0.11.0](https://github.com/carlreid/StreamMaster/compare/v0.10.2...v0.11.0) (2025-02-25)
+
+
+### Features
+
+* Add Play Stream dialog ([9504cdd](https://github.com/carlreid/StreamMaster/commit/9504cdd8c2425ed524dda204799a97d72ffeefa0))
+
 ## [0.10.2](https://github.com/carlreid/StreamMaster/compare/v0.10.1...v0.10.2) (2025-02-24)
 
 
