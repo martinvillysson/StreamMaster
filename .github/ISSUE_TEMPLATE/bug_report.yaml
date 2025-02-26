@@ -1,19 +1,38 @@
 name: Bug Report
-description: Please do not use bug reports for support issues. For help or support, please create a Discussion at https://github.com/carlreid/StreamMaster/discussions.
+description: Running into an issue? Let us know!
 title: "Bug: "
 labels: ["status:not-yet-viewed", "bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Need help or support? Please [create a Discussion](https://github.com/carlreid/StreamMaster/discussions).
+        **Important: Read Before Submitting**
+        - Need help or support? Please [create a Discussion](https://github.com/carlreid/StreamMaster/discussions/new?category=q-a) instead.
+        - Incomplete bug reports can be closed without investigation.
+        - Please follow all sections of this template carefully.
 
   - type: textarea
     id: bug-description
     attributes:
       label: Describe the Bug
-      description: A clear and concise description of what the bug is.
-      placeholder: Tell us what's happening...
+      description: A clear and concise description of what the bug is. What were you expecting to happen, and what actually happened?
+      placeholder: "Example: When I view EPG in Chrome, no logos are loading."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: Provide detailed steps that will allow us to reproduce this bug. Be specific!
+      placeholder: |
+        For test M3U, use https://iptv-org.github.io/iptv/index.m3u
+        For test EPG, use https://epgshare01.online
+
+        1. Go to '...'
+        2. Click on '...'
+        3. Change channel from '...' to '...'
+        4. See error
     validations:
       required: true
 
@@ -30,5 +49,61 @@ body:
     id: logs
     attributes:
       label: Relevant Logs
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      description: |
+        Please provide log output from when the issue started until it ended.
+
+        Examples on how to get logs by CLI:
+        - `docker logs --tail 100 streammaster` (last 100 lines)
+        - `docker logs --since 1h streammaster` (last hour)
+
+        How to get logs from UI:
+        1. Go to StreamMaster web interface
+        2. Go to "Settings" (gear icon)
+        3. Find logs under the "LOGS" section
+      placeholder: |
+        Example:
+        info: StreamMaster.Infrastructure.Services.QueueService.QueuedHostedService[0]
+              Finished CreateSTRMFiles
+        info: StreamMaster.Infrastructure.Services.QueueService.BackgroundTaskQueue[0]
+              Added SetIsSystemReady to Queue
+        info: StreamMaster.Infrastructure.Services.QueueService.BackgroundTaskQueue[0]
+              Got SetIsSystemReady from Queue
+        info: StreamMaster.Infrastructure.Services.QueueService.QueuedHostedService[0]
+              Starting SetIsSystemReady
+        info: StreamMaster.Infrastructure.Services.MessageService[0]
+              Starting task: SetIsSystemReady
       render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Relevant Configuration
+      description: |
+        Please provide your relevant configuration settings (with sensitive information redacted).
+        This might include stream settings, channel configuration, etc.
+      placeholder: |
+        Example:
+        Auto Set EPG: Unchecked
+        Cache Logos: Checked
+        Strm Base URL: http://localhost:7095
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Verification
+      description: Please check all boxes to confirm you've provided necessary information.
+      options:
+        - label: I have included COMPLETE logs, not just error messages
+          required: true
+        - label: I have provided detailed reproduction steps
+          required: true
+        - label: I have checked for similar issues before creating this report
+          required: true
+        - label: I have tried the `latest` release to see if the issue has already been fixed
+          required: true
+        - label: I understand that incomplete reports may be closed without investigation
+          required: true
