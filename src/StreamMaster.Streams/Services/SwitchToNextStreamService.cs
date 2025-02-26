@@ -136,24 +136,49 @@ public sealed class SwitchToNextStreamService(
 
     private async Task<SMStreamDto?> ResolveSMStreamAsync(IServiceScope scope, IStreamStatus channelStatus, string? overrideSMStreamId)
     {
+        // If a Stream ID is provided, return with that as the stream
         if (!string.IsNullOrEmpty(overrideSMStreamId))
         {
             IRepositoryWrapper repository = scope.ServiceProvider.GetRequiredService<IRepositoryWrapper>();
             return await repository.SMStream.GetSMStreamAsync(overrideSMStreamId).ConfigureAwait(false);
         }
 
-        List<SMStreamDto> smStreams = [.. channelStatus.SMChannel.SMStreamDtos.OrderBy(a => a.Rank)];
-        for (int i = 0; i < smStreams.Count; i++)
+        // Otherwise, locate the next stream in the rotation
+        List<SMStreamDto> smStreams = [.. channelStatus.SMChannel.SMStreamDtos.OrderBy(stream => stream.Rank)];
+        if (smStreams.Count == 0)
         {
-            channelStatus.SMChannel.CurrentRank = (channelStatus.SMChannel.CurrentRank + 1) % smStreams.Count;
-            SMStreamDto smStream = smStreams[channelStatus.SMChannel.CurrentRank];
-
-            if (!streamLimitsService.IsLimited(smStream))
-            {
-                return smStream;
-            }
+            return null;
         }
 
+        // Get the current stream if one exists
+        SMStreamDto? currentStream = null;
+        if (channelStatus.SMChannel.CurrentRank >= 0 && channelStatus.SMChannel.CurrentRank < smStreams.Count)
+        {
+            currentStream = smStreams[channelStatus.SMChannel.CurrentRank];
+        }
+
+        // Try each stream in rotation order, starting from the next one after current
+        int startingRank = (channelStatus.SMChannel.CurrentRank + 1) % smStreams.Count;
+        int currentRankToCheck = startingRank;
+
+        do
+        {
+            SMStreamDto candidateStream = smStreams[currentRankToCheck];
+
+            // Check if the candidate stream is valid.
+            bool sameM3UFile = currentStream?.M3UFileId == candidateStream.M3UFileId;
+            bool notLimited = !streamLimitsService.IsLimited(candidateStream);
+
+            if (sameM3UFile || notLimited)
+            {
+                return candidateStream;
+            }
+
+            // Move to the next stream in rotation
+            currentRankToCheck = (currentRankToCheck + 1) % smStreams.Count;
+        } while (currentRankToCheck != startingRank); // Stop when we've checked all streams
+
+        // No valid stream found
         return null;
     }
 

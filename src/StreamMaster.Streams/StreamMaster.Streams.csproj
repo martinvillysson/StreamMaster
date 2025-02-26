@@ -8,6 +8,8 @@
     
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
     
+    <PackageReference Include="Polly.Core" Version="8.5.2" />
+    
     <PackageReference Include="System.Formats.Asn1" Version="9.0.2" />
   </ItemGroup>
   <ItemGroup>

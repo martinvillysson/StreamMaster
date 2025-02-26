@@ -1,6 +1,9 @@
-﻿using StreamMaster.Domain.Enums;
+﻿using Polly.Retry;
+using Polly;
+using StreamMaster.Domain.Enums;
 using StreamMaster.Streams.Domain.Events;
 using StreamMaster.Streams.Services;
+using StreamMaster.Streams.Domain.Exceptions;
 
 namespace StreamMaster.Streams.Channels;
 
@@ -17,6 +20,7 @@ public sealed class ChannelService : IChannelService
     private readonly Lock _disposeLock = new();
     private bool _disposed = false;
     private readonly SemaphoreSlim _registerSemaphore = new(1, 1);
+    private readonly ResiliencePipeline _retryPolicy;
 
     public ChannelService(
         ILogger<ChannelService> logger,
@@ -25,7 +29,8 @@ public sealed class ChannelService : IChannelService
         IChannelBroadcasterService channelBroadcasterService,
         ICacheManager cacheManager,
         IMessageService messageService,
-        ISwitchToNextStreamService switchToNextStreamService)
+        ISwitchToNextStreamService switchToNextStreamService,
+        TimeSpan? retryDelay = null)
     {
         this.messageService = messageService;
         _streamLimitsService = streamLimitsService;
@@ -35,6 +40,26 @@ public sealed class ChannelService : IChannelService
         _switchToNextStreamService = switchToNextStreamService;
         this.logger = logger;
         _sourceBroadcasterService.OnStreamBroadcasterStopped += StreamBroadcasterService_OnStreamBroadcasterStoppedEventAsync;
+
+        var retryOptions = new RetryStrategyOptions
+        {
+            BackoffType = DelayBackoffType.Exponential,
+            UseJitter = true,
+            MaxRetryAttempts = 3,
+            Delay = retryDelay ?? TimeSpan.FromSeconds(2),
+            OnRetry = args =>
+            {
+                logger.LogInformation(
+                    "Attempt {Attempt} to switch channel. Waiting {Delay} before next attempt.",
+                    args.AttemptNumber,
+                    args.RetryDelay);
+                return default;
+            }
+        };
+
+        _retryPolicy = new ResiliencePipelineBuilder()
+            .AddRetry(retryOptions)
+            .Build();
     }
 
     /// <inheritdoc/>
@@ -291,6 +316,7 @@ public sealed class ChannelService : IChannelService
             }
         }
     }
+
     public IChannelBroadcaster? GetChannelBroadcaster(int smChannelId)
     {
         _cacheManager.ChannelBroadcasters.TryGetValue(smChannelId, out IChannelBroadcaster? channelBroadcaster);
@@ -348,40 +374,40 @@ public sealed class ChannelService : IChannelService
             return false;
         }
 
-        ISourceBroadcaster? sourceBroadcaster = null;
-
-        while (sourceBroadcaster == null)
+        try
         {
-            logger.LogDebug("Starting SwitchToNextStream with channelBroadcaster: {channelBroadcaster} and overrideNextVideoStreamId: {overrideNextVideoStreamId}", channelBroadcaster, overrideSMStreamId);
-
-            bool didChange = await _switchToNextStreamService.SetNextStreamAsync(channelBroadcaster, overrideSMStreamId).ConfigureAwait(false);
-            if (channelBroadcaster.SMStreamInfo == null || !didChange)
+            return await _retryPolicy.ExecuteAsync(async token =>
             {
-                logger.LogDebug("Exiting SwitchToNextStream with false due to smStream being null");
+                ISourceBroadcaster? sourceBroadcaster = null;
+
+                bool didChange = await _switchToNextStreamService.SetNextStreamAsync(channelBroadcaster, overrideSMStreamId).ConfigureAwait(false);
+                if (channelBroadcaster.SMStreamInfo == null || !didChange)
+                {
+                    logger.LogDebug("Exiting SwitchToNextStream with false due to smStream being null");
+                    channelBroadcaster.FailoverInProgress = false;
+                    return false;
+                }
+
+                sourceBroadcaster = await _sourceBroadcasterService.GetOrCreateStreamBroadcasterAsync(
+                    channelBroadcaster.SMStreamInfo,
+                    token).ConfigureAwait(false);
+
+                if (sourceBroadcaster == null)
+                {
+                    throw new SourceBroadcasterNotFoundException("Failed to create source broadcaster");
+                }
+
+                sourceBroadcaster.AddChannelBroadcaster(channelBroadcaster);
                 channelBroadcaster.FailoverInProgress = false;
-                continue;
-            }
 
-            sourceBroadcaster = await _sourceBroadcasterService.GetOrCreateStreamBroadcasterAsync(channelBroadcaster.SMStreamInfo, CancellationToken.None).ConfigureAwait(false);
-
-            if (sourceBroadcaster != null)
-            {
-                break;
-            }
+                logger.LogDebug("Finished SwitchToNextStream");
+                return true;
+            }, CancellationToken.None);
         }
-
-        if (sourceBroadcaster == null)
+        finally
         {
-            logger.LogDebug("Exiting, Source Channel Distributor is null");
             channelBroadcaster.FailoverInProgress = false;
-            return false;
         }
-
-        sourceBroadcaster.AddChannelBroadcaster(channelBroadcaster);
-        channelBroadcaster.FailoverInProgress = false;
-
-        logger.LogDebug("Finished SwitchToNextStream");
-        return true;
     }
 
     private async Task<bool> SetupMultiView(IChannelBroadcaster channelBroadcaster)
