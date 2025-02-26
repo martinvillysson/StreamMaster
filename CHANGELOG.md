@@ -1,3 +1,34 @@
+# [0.11.0](https://github.com/carlreid/StreamMaster/compare/v0.10.2...v0.11.0) (2025-02-26)
+
+
+### Bug Fixes
+
+* Add critical operation checks and early exits ([e4e6ba5](https://github.com/carlreid/StreamMaster/commit/e4e6ba58f0dbc460aff6f58025d721bc119d375e))
+* Add nullglob for safer array handling ([bd218c9](https://github.com/carlreid/StreamMaster/commit/bd218c937deab9cdad76b3a0607f4c203c1a8c7b))
+* Add trap for temp script cleanup ([6c7327b](https://github.com/carlreid/StreamMaster/commit/6c7327bd4e26e1b87adab8f59a8152878780639d))
+* Cache EPG logos ([0b31fc9](https://github.com/carlreid/StreamMaster/commit/0b31fc961c5868f1bc145089b4d198fd4daa322c))
+* Eho failures to chmod ([1ca591d](https://github.com/carlreid/StreamMaster/commit/1ca591d5691b51b912c157dbb7d71ac1cc31b380))
+* Handle case where PUID/PGID is `0` ([b759b3a](https://github.com/carlreid/StreamMaster/commit/b759b3a692226bcc396c06b5c75ed2ee22a78165))
+* Handle failure to creat config.json ([753523f](https://github.com/carlreid/StreamMaster/commit/753523f1756bad062bc11ed01e5964762012a5a7))
+* Improve directory rename safety with atomic operation ([8e37e4b](https://github.com/carlreid/StreamMaster/commit/8e37e4b50d0e16d8b47bf53fa63251d7fbaec4ee))
+* Remove handling of non-existing migration IDs ([4b3398e](https://github.com/carlreid/StreamMaster/commit/4b3398e76e6dd3b342131ee4791b19203e023966))
+* Shellcheck related suggestions and fixes ([15a9af0](https://github.com/carlreid/StreamMaster/commit/15a9af0d074470cb4f7126831ec71189349a234d))
+* Should attempt redirect first ([ae7925b](https://github.com/carlreid/StreamMaster/commit/ae7925b6f0d6fdb2b805f6bddf1073f2ecfa4cbb))
+* Source env things first ([0b46c58](https://github.com/carlreid/StreamMaster/commit/0b46c58ae607227620847ce08f7fa8c8e1207a68))
+* Trap postgres in case of failure ([2313119](https://github.com/carlreid/StreamMaster/commit/2313119ec48f4a29481b7f44d903ddd995b741e0))
+* Wrap in quotes to avoid bad names ([0365eb1](https://github.com/carlreid/StreamMaster/commit/0365eb134f249323ef041e3ddfc2b1b6685855bb))
+
+
+### Features
+
+* Add auto set EPG button more front facing ([464aa01](https://github.com/carlreid/StreamMaster/commit/464aa01d5365f01a777b323cb07fa3e038ed0b33))
+* Add Play Stream dialog ([9504cdd](https://github.com/carlreid/StreamMaster/commit/9504cdd8c2425ed524dda204799a97d72ffeefa0))
+* Add validation of PUID and PGID values ([7ed4915](https://github.com/carlreid/StreamMaster/commit/7ed4915ddbd0c1c0b9068f4fc3de8785ab04169a))
+* Handle directory creation with fail output ([341fd2b](https://github.com/carlreid/StreamMaster/commit/341fd2b5e21c562dd86bda1374c8d7e08d5e5eac))
+* Handle faulire cases ([8126757](https://github.com/carlreid/StreamMaster/commit/8126757c93da5a23a44c4ab657d992cab6da4830))
+* Make PostgreSQL wait parameters configurable ([c945727](https://github.com/carlreid/StreamMaster/commit/c945727dfce1672b06f57508c91cb8790313fc65))
+* Output failures when `chown` ([828270c](https://github.com/carlreid/StreamMaster/commit/828270c54f6e3fcc997f148a1dfe720059f8fd7a))
+
 # [0.11.0](https://github.com/carlreid/StreamMaster/compare/v0.10.2...v0.11.0) (2025-02-25)
 
 
