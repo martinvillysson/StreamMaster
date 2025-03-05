@@ -171,6 +171,8 @@ public sealed class SwitchToNextStreamService(
 
             if (sameM3UFile || notLimited)
             {
+                // Update the CurrentRank before returning the stream
+                channelStatus.SMChannel.CurrentRank = currentRankToCheck;
                 return candidateStream;
             }
 
