@@ -1,3 +1,11 @@
+## [0.11.1](https://github.com/carlreid/StreamMaster/compare/v0.11.0...v0.11.1) (2025-03-05)
+
+
+### Bug Fixes
+
+* Dropdown text alignment ([7486efa](https://github.com/carlreid/StreamMaster/commit/7486efa12af8546564616f3e51f68e194b1a510e))
+* Persist rank to CurrentRank ([74818c8](https://github.com/carlreid/StreamMaster/commit/74818c863edd968ed3e2b03dd688c47f0b50e88e))
+
 # [0.11.0](https://github.com/carlreid/StreamMaster/compare/v0.10.2...v0.11.0) (2025-02-26)
 
 
