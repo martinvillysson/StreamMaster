@@ -8866,7 +8866,6 @@ div[aria-haspopup=dialog] {
 }
 
 .sm-button {
-  height: 1.4rem;
   padding: 0;
   transition: filter 0.3s ease;
 }

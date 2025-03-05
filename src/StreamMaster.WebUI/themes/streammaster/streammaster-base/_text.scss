@@ -86,18 +86,9 @@ div[aria-haspopup="dialog"] {
 }
 
 .stringeditor {
-    // align-items: center;
     background-color: transparent;
-    // border-color: transparent;
-    // border-radius: $borderRadius;
-    // border-style: solid;
-    // border-width: $inputBorder-size;
     color: $textColor;
-    // display: flex;
-    // justify-content: space-between;
     position: relative;
-    // width: 100%;
-
 
     .p-inputtext:not(.p-inputnumber-input) {
         // border: unset;
