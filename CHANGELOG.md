@@ -1,3 +1,13 @@
+## [0.11.2](https://github.com/carlreid/StreamMaster/compare/v0.11.1...v0.11.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* Adjustment to command profiles and groups ([5e8828a](https://github.com/carlreid/StreamMaster/commit/5e8828ac70290b307f75cd009f70de0f5a8d3fd1))
+* Adjustment to Enum alignment ([0cfbf1f](https://github.com/carlreid/StreamMaster/commit/0cfbf1fc24a319792835ff9d207aef1b4f56c107))
+* Custom playlist scan update channels and logos ([5407116](https://github.com/carlreid/StreamMaster/commit/540711600610029ce7d313f542fb73bca15247c4))
+* Don't `break` out of the EPG iteration ([539ba01](https://github.com/carlreid/StreamMaster/commit/539ba0100efbe550bbed0d7921ab7b650bfe0532))
+
 ## [0.11.1](https://github.com/carlreid/StreamMaster/compare/v0.11.0...v0.11.1) (2025-03-05)
 
 
