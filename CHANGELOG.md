@@ -1,3 +1,10 @@
+## [0.11.3](https://github.com/carlreid/StreamMaster/compare/v0.11.2...v0.11.3) (2025-03-15)
+
+
+### Bug Fixes
+
+* Fallback to EPG logos if channel misses one ([8c4d748](https://github.com/carlreid/StreamMaster/commit/8c4d7486145bd702de36720bbeaba41932c74ef0))
+
 ## [0.11.2](https://github.com/carlreid/StreamMaster/compare/v0.11.1...v0.11.2) (2025-03-13)
 
 
