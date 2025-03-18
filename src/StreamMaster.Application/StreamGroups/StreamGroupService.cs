@@ -624,7 +624,8 @@ public partial class StreamGroupService(IHttpContextAccessor httpContextAccessor
                 StationId = smChannel.StationId,
                 GroupTitle = smChannel.GroupTitle,
                 CommandProfile = commandProfile,
-                OutputProfile = outputProfile
+                OutputProfile = outputProfile,
+                VideoUrl = smChannel.SMStreams?.FirstOrDefault()?.SMStream.Url,
             };
 
             videoStreamConfig.ChannelNumber = GetNextChNo(videoStreamConfig.ChannelNumber);
