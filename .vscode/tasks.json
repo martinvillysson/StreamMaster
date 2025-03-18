@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/StreamMasterAPI/StreamMasterAPI.csproj",
+        "${workspaceFolder}\\src\\StreamMaster.API\\StreamMaster.API.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -19,7 +19,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/StreamMasterAPI/StreamMasterAPI.csproj",
+        "${workspaceFolder}\\src\\StreamMaster.API\\StreamMaster.API.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -33,7 +33,7 @@
         "watch",
         "run",
         "--project",
-        "${workspaceFolder}/StreamMasterAPI/StreamMasterAPI.csproj"
+        "${workspaceFolder}\\src\\StreamMaster.API\\StreamMaster.API.csproj"
       ],
       "problemMatcher": "$msCompile"
     },
@@ -46,12 +46,12 @@
       "dockerBuild": {
         "tag": "streammaster:dev",
         "target": "base",
-        "dockerfile": "${workspaceFolder}/StreamMasterAPI/Dockerfile",
+        "dockerfile": "${workspaceFolder}/StreamMaster.API/Dockerfile",
         "context": "${workspaceFolder}",
         "pull": true
       },
       "netCore": {
-        "appProject": "${workspaceFolder}/StreamMasterAPI/StreamMasterAPI.csproj"
+        "appProject": "${workspaceFolder}\\src\\StreamMaster.API\\StreamMaster.API.csproj"
       }
     },
     {
@@ -62,12 +62,12 @@
       ],
       "dockerBuild": {
         "tag": "streammaster:latest",
-        "dockerfile": "${workspaceFolder}/StreamMasterAPI/Dockerfile",
+        "dockerfile": "${workspaceFolder}/StreamMaster.API/Dockerfile",
         "context": "${workspaceFolder}",
         "pull": true
       },
       "netCore": {
-        "appProject": "${workspaceFolder}/StreamMasterAPI/StreamMasterAPI.csproj"
+        "appProject": "${workspaceFolder}\\src\\StreamMaster.API\\StreamMaster.API.csproj"
       }
     },
     {
