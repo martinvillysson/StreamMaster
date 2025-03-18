@@ -100,6 +100,13 @@ public static class SettingFiles
             {
                 IsReadOnly = true
             }
+        },        
+        {
+            "UnmodifiedM3UStreamUrl",
+            new CommandProfile
+            {
+                IsReadOnly = true
+            }
         }
     }
     };

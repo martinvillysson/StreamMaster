@@ -85,4 +85,6 @@ public class VideoStreamConfig
     public string BaseUrl { get; set; } = string.Empty;
 
     public int StreamGroupProfileId { get; set; }
+
+    public string VideoUrl { get; set; } = string.Empty;
 }
