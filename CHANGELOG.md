@@ -1,3 +1,19 @@
+# [0.12.0](https://github.com/carlreid/StreamMaster/compare/v0.11.3...v0.12.0) (2025-03-24)
+
+
+### Bug Fixes
+
+* Ensure that multiselect value is `''` if null ([0307ec2](https://github.com/carlreid/StreamMaster/commit/0307ec29cbbc271fdda72e6305660f4d9ea1d3fb))
+* Ensure to release lock in `final` ([6a76d65](https://github.com/carlreid/StreamMaster/commit/6a76d65cc006278d6503d7ced7e34a5897d79044))
+* Filter away potential undefined stations ([a58f8d7](https://github.com/carlreid/StreamMaster/commit/a58f8d705c11264fcfdf17eaece99c0bb905780d))
+* Make use of `IHttpClientFactory` to get clients ([a7ca54a](https://github.com/carlreid/StreamMaster/commit/a7ca54a0685c374ea96a7f98b6f333e2371e957c))
+* Remove from hook dependency ([84d9be3](https://github.com/carlreid/StreamMaster/commit/84d9be34380f7be7b803124c6b9f8b6db35b766f))
+
+
+### Features
+
+* Set Streammaster specific UA for SD ([49b7448](https://github.com/carlreid/StreamMaster/commit/49b7448f2f931e620042a95089d67b430ef02f36))
+
 ## [0.11.3](https://github.com/carlreid/StreamMaster/compare/v0.11.2...v0.11.3) (2025-03-15)
 
 
