@@ -1,3 +1,17 @@
+# [0.13.0](https://github.com/carlreid/StreamMaster/compare/v0.12.0...v0.13.0) (2025-03-30)
+
+
+### Bug Fixes
+
+* Remove debug log message ([4435801](https://github.com/carlreid/StreamMaster/commit/443580116bf6ca5c209d77491a4ce33c1e1597a4))
+* Use `Release` version ([2fe37db](https://github.com/carlreid/StreamMaster/commit/2fe37db654f3c724922fef18a16221b9eb658520))
+
+
+### Features
+
+* Give credit to contributors ([96b90c6](https://github.com/carlreid/StreamMaster/commit/96b90c6897e367a90d379d582f98deec9f160118))
+* Video player fallback to hls/mpegts ([ba8c87e](https://github.com/carlreid/StreamMaster/commit/ba8c87e1b8ebc35d3b601b71bede7991e90bc3a7))
+
 # [0.12.0](https://github.com/carlreid/StreamMaster/compare/v0.11.3...v0.12.0) (2025-03-24)
 
 
