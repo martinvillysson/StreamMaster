@@ -116,6 +116,10 @@ const BaseChannelGroupSelector = memo(
 
     const rowClass = useCallback((data: unknown): string => {
       var channelGroup = data as ChannelGroupDto;
+      if (channelGroup?.Name?.includes('ARNOLD')) {
+        Logger.debug('channelGroup', channelGroup.Name, channelGroup.IsHidden);
+      }
+
       if (channelGroup.IsHidden === true) {
         return 'channel-row-selected';
       }

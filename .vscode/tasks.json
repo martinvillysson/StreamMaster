@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/src/StreamMaster.API/StreamMaster.API.csproj",
+        "${workspaceFolder}\\src\\StreamMaster.API\\StreamMaster.API.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -19,7 +19,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/src/StreamMaster.API/StreamMaster.API.csproj",
+        "${workspaceFolder}\\src\\StreamMaster.API\\StreamMaster.API.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -33,31 +33,41 @@
         "watch",
         "run",
         "--project",
-        "${workspaceFolder}/src/StreamMaster.API/StreamMaster.API.csproj"
+        "${workspaceFolder}\\src\\StreamMaster.API\\StreamMaster.API.csproj"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "clean",
-      "command": "bash",
-      "type": "process",
-      "args": [
-        "-c",
-        "echo '🧼 Running dotnet clean...' && dotnet clean ${workspaceFolder} && echo '✨ Clean completed successfully!'"
+      "type": "docker-build",
+      "label": "docker-build: debug",
+      "dependsOn": [
+        "build"
       ],
-      "problemMatcher": "$msCompile",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": false,
-        "clear": false
+      "dockerBuild": {
+        "tag": "streammaster:dev",
+        "target": "base",
+        "dockerfile": "${workspaceFolder}/StreamMaster.API/Dockerfile",
+        "context": "${workspaceFolder}",
+        "pull": true
       },
-      "isBackground": false,
-      "group": {
-        "kind": "build",
-        "isDefault": false
+      "netCore": {
+        "appProject": "${workspaceFolder}\\src\\StreamMaster.API\\StreamMaster.API.csproj"
+      }
+    },
+    {
+      "type": "docker-build",
+      "label": "docker-build: release",
+      "dependsOn": [
+        "build"
+      ],
+      "dockerBuild": {
+        "tag": "streammaster:latest",
+        "dockerfile": "${workspaceFolder}/StreamMaster.API/Dockerfile",
+        "context": "${workspaceFolder}",
+        "pull": true
+      },
+      "netCore": {
+        "appProject": "${workspaceFolder}\\src\\StreamMaster.API\\StreamMaster.API.csproj"
       }
     },
     {

@@ -102,17 +102,11 @@
       "name": "Web UI: Clean Install",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/src/StreamMaster.WebUI",
-      "runtimeExecutable": "bash",
-      "runtimeArgs": [
-        "-c",
-        "echo '🧹 Cleaning up old dependencies...' && rm -rf node_modules && echo '📄 Removing package-lock.json...' && rm -f package-lock.json && echo '📦 Installing fresh dependencies...' && npm install && echo '✅ Clean install completed successfully!'"
-      ],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    }
-  ],
-  "compounds": [
+      "preLaunchTask": "docker-run: debug",
+      "netCore": {
+        "appProject": "${workspaceFolder}/StreamMaster.API/StreamMaster.API.csproj"
+      }
+    },
     {
       "name": "Full Stack: Run (Standard)",
       "configurations": [
