@@ -71,45 +71,28 @@
       }
     },
     {
-      "type": "docker-run",
-      "label": "docker-run: debug",
-      "dependsOn": [
-        "docker-build"
+      "label": "test",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}",
+        "--logger:\"console;verbosity=detailed\"",
+        "/property:GenerateFullPaths=true"
       ],
-      "dockerRun": {
-        "env": {
-          "DEBUG": "*",
-          "NODE_ENV": "development"
-        }
+      "group": {
+        "kind": "test",
+        "isDefault": true
       },
-      "node": {
-        "package": "${workspaceFolder}/StreamMaster.WebUI/package.json",
-        "enableDebugging": true
-      }
-    },
-    {
-      "type": "docker-run",
-      "label": "docker-run: release",
-      "dependsOn": [
-        "docker-build"
-      ],
-      "platform": "node",
-      "node": {
-        "package": "${workspaceFolder}/StreamMaster.WebUI/package.json"
-      }
-    },
-    {
-      "type": "docker-build",
-      "label": "docker-build",
-      "platform": "node",
-      "dockerBuild": {
-        "dockerfile": "${workspaceFolder}/StreamMaster.WebUI/Dockerfile",
-        "context": "${workspaceFolder}/StreamMaster.WebUI",
-        "pull": true
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
       },
-      "node": {
-        "package": "${workspaceFolder}/StreamMaster.WebUI/package.json"
-      }
+      "problemMatcher": "$msCompile"
     }
   ]
 }

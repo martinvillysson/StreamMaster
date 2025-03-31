@@ -52,10 +52,45 @@ View available releases at our [container registry](https://github.com/carlreid/
 
 - **Issues**: Bug reports and feature requests ([create an issue](https://github.com/carlreid/StreamMaster/issues))
 - **Discussions**: Community feedback and ideas ([open a discussion](https://github.com/carlreid/StreamMaster/discussions))
-- **Development**: Pull requests welcome
+- **Development**: Pull requests welcome (read more about [how to contribute](https://github.com/carlreid/StreamMaster/blob/main/.github/CONTRIBUTING.md))
 
 ---
 
 *This repository is a fork of the original SenexCrenshaw/StreamMaster project, which was discontinued(?) in early 2025.*
 
 *For historical reference, see the original [README](README_old.md).*
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.carlreid.dk"><img src="https://avatars.githubusercontent.com/u/33623601?v=4?s=100" width="100px;" alt="Carl Reid"/><br /><sub><b>Carl Reid</b></sub></a><br /><a href="https://github.com/carlreid/StreamMaster/commits?author=carlreid" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://aandree5.github.io"><img src="https://avatars.githubusercontent.com/u/32734153?v=4?s=100" width="100px;" alt="Andre Silva"/><br /><sub><b>Andre Silva</b></sub></a><br /><a href="https://github.com/carlreid/StreamMaster/commits?author=Aandree5" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/iamfil"><img src="https://avatars.githubusercontent.com/u/329172?v=4?s=100" width="100px;" alt="Fil"/><br /><sub><b>Fil</b></sub></a><br /><a href="https://github.com/carlreid/StreamMaster/commits?author=iamfil" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jackydec"><img src="https://avatars.githubusercontent.com/u/25207298?v=4?s=100" width="100px;" alt="jackydec"/><br /><sub><b>jackydec</b></sub></a><br /><a href="https://github.com/carlreid/StreamMaster/commits?author=jackydec" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jbf154"><img src="https://avatars.githubusercontent.com/u/16122392?v=4?s=100" width="100px;" alt="jbf154"/><br /><sub><b>jbf154</b></sub></a><br /><a href="https://github.com/carlreid/StreamMaster/commits?author=jbf154" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tam1m"><img src="https://avatars.githubusercontent.com/u/472185?v=4?s=100" width="100px;" alt="Tamim Baschour"/><br /><sub><b>Tamim Baschour</b></sub></a><br /><a href="https://github.com/carlreid/StreamMaster/commits?author=tam1m" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Austin1"><img src="https://avatars.githubusercontent.com/u/341408?v=4?s=100" width="100px;" alt="Austin1"/><br /><sub><b>Austin1</b></sub></a><br /><a href="https://github.com/carlreid/StreamMaster/commits?author=Austin1" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
