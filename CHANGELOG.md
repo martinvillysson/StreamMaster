@@ -1,3 +1,10 @@
+# [0.14.0](https://github.com/carlreid/StreamMaster/compare/v0.13.0...v0.14.0) (2025-05-06)
+
+
+### Features
+
+* Toggle on/off short links ([4bf8658](https://github.com/carlreid/StreamMaster/commit/4bf8658d81ffa8e691178a4ab097ccdfb3a7d20d))
+
 # [0.13.0](https://github.com/carlreid/StreamMaster/compare/v0.12.0...v0.13.0) (2025-03-30)
 
 
