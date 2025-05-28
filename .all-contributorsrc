@@ -51,7 +51,7 @@
       "contributions": [
         "code"
       ]
-    }
+    },
     {
       "login": "jbf154",
       "name": "jbf154",
@@ -66,6 +66,24 @@
       "name": "jackydec",
       "avatar_url": "https://avatars.githubusercontent.com/u/25207298?v=4",
       "profile": "https://github.com/jackydec",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Grosner300",
+      "name": "Gary",
+      "avatar_url": "https://avatars.githubusercontent.com/u/24656399?v=4",
+      "profile": "https://github.com/Grosner300",
+      "contributions": [
+        "userTesting"
+      ]
+    },
+    {
+      "login": "enmand",
+      "name": "Dan Enman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/432487?v=4",
+      "profile": "https://danielenman.com/",
       "contributions": [
         "code"
       ]

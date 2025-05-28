@@ -28,7 +28,7 @@ public interface ISchedulesDirectAPIService
 
     Task<LineupResult?> GetLineupResultAsync(string lineup, CancellationToken cancellationToken);
 
-    Task<HttpResponseMessage?> GetSdImageAsync(string uri, CancellationToken cancellationToken);
+    Task<HttpResponseMessage?> GetImageAsync(string uri, CancellationToken cancellationToken);
 
     Task<List<ProgramMetadata>?> GetArtworkAsync(string[] programIds, CancellationToken cancellationToken);
 

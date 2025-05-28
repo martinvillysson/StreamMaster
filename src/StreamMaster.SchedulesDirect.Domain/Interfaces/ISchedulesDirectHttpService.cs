@@ -2,7 +2,7 @@
 
 namespace StreamMaster.SchedulesDirect.Domain.Interfaces
 {
-    public interface IHttpService
+    public interface ISchedulesDirectHttpService
     {
         bool GoodToken { get; }
 

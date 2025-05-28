@@ -9,7 +9,7 @@ namespace StreamMaster.SchedulesDirect.Services;
 
 public class SchedulesDirectRepository(
         ILogger<SchedulesDirectRepository> logger,
-        IHttpService httpService,
+        ISchedulesDirectHttpService httpService,
         SMCacheManager<CountryData> CountryCache,
         SMCacheManager<Headend> HeadendCache,
         SMCacheManager<LineupPreviewChannel> LineupPreviewChannelCache,
@@ -324,9 +324,9 @@ public class SchedulesDirectRepository(
         );
     }
 
-    public async Task<HttpResponseMessage?> GetSdImageAsync(string uri, CancellationToken cancellationToken)
+    public async Task<HttpResponseMessage?> GetImageAsync(string uri, CancellationToken cancellationToken)
     {
-        if (!sdSettings.CurrentValue.SDEnabled)
+        if (!sdSettings.CurrentValue.SDEnabled || !sdSettings.CurrentValue.SeriesPosterArt)
         {
             return null;
         }
@@ -336,17 +336,43 @@ public class SchedulesDirectRepository(
             HttpRequestMessage request = new(HttpMethod.Get, uri);
             HttpResponseMessage response = await httpService.SendRawRequestAsync(request, cancellationToken);
 
-            if (!response.IsSuccessStatusCode || response.Content.Headers.ContentType?.MediaType == "application/json")
+            if (!response.IsSuccessStatusCode)
             {
-                logger.LogWarning("Invalid response for GetSdImage request to {Uri}", uri);
+                string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                logger.LogWarning("HTTP {StatusCode} for GetImageAsync request to {Uri}. Response: {Response}",
+                    response.StatusCode, uri, responseContent);
+                return null;
+            }
+
+            if (response.Content.Headers.ContentType?.MediaType == "application/json")
+            {
+                string jsonContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                logger.LogWarning("Unexpected JSON response for GetImageAsync request to {Uri}. Content: {Content}",
+                    uri, jsonContent);
                 return null;
             }
 
             return response;
         }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "HTTP request failed for image {Uri}. Message: {Message}", uri, ex.Message);
+            return null;
+        }
+        catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
+        {
+            logger.LogError(ex, "Request timeout for image {Uri}", uri);
+            return null;
+        }
+        catch (TaskCanceledException ex)
+        {
+            logger.LogError(ex, "Request cancelled for image {Uri}", uri);
+            return null;
+        }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error fetching image for {Uri}", uri);
+            logger.LogError(ex, "Unexpected error fetching image for {Uri}. Type: {ExceptionType}",
+                uri, ex.GetType().Name);
             return null;
         }
     }

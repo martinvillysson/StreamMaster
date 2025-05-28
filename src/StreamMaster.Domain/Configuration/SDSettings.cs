@@ -1,4 +1,6 @@
-﻿namespace StreamMaster.Domain.Configuration
+﻿using System.Text.Json.Serialization;
+
+namespace StreamMaster.Domain.Configuration
 {
     [TsInterface(AutoI = false, IncludeNamespace = false, FlattenHierarchy = true, AutoExportMethods = false)]
     public class SDSettings
@@ -26,6 +28,7 @@
         public List<HeadendToView> HeadendsToView { get; set; } = [];
         public string SDUserName { get; set; } = string.Empty;
         public string UserAgent { get; set; } = "StreamMaster/0.0.0.Sha.0000000000000000000000000000000000000000";
+        public bool SeriesPosterArt { get; set; } = false;
 
         public bool MovieImages { get; set; } = true;
         public bool SeasonImages { get; set; } = false;
@@ -44,6 +47,10 @@
         public bool XmltvExtendedInfoInTitleDescriptions { get; set; } = false;
         public bool XmltvIncludeChannelNumbers { get; set; } = false;
         public bool XmltvSingleImage { get; set; } = false;
-        public DateTime SDTooManyRequestsSuspend { get; set; } = DateTime.MinValue;
+
+        /// <summary>
+        /// List of active error cooldowns
+        /// </summary>
+        public List<ErrorCooldownSetting> ErrorCooldowns { get; set; } = [];
     }
 }

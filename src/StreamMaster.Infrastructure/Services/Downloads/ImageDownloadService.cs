@@ -1,19 +1,17 @@
-﻿using System.Drawing;
-using System.Drawing.Imaging;
-using System.Net;
-
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
 using StreamMaster.Domain.Configuration;
 using StreamMaster.Domain.Dto;
 using StreamMaster.Domain.Enums;
 using StreamMaster.Domain.Extensions;
 using StreamMaster.Domain.Helpers;
+using StreamMaster.SchedulesDirect.Domain;
 using StreamMaster.SchedulesDirect.Domain.Interfaces;
 using StreamMaster.SchedulesDirect.Domain.JsonClasses;
-
 using Svg;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Net;
 
 namespace StreamMaster.Infrastructure.Services.Downloads
 {
@@ -27,20 +25,25 @@ namespace StreamMaster.Infrastructure.Services.Downloads
         private readonly IImageDownloadQueue imageDownloadQueue;
         private readonly SemaphoreSlim sdDownloadSemaphore;
         private readonly SemaphoreSlim downloadSemaphore;
-        private readonly HttpClient httpClient; // Reused HttpClient via factory
-        private DateTime Last429Dt = DateTime.MinValue;
+        private readonly HttpClient httpClient;
 
-        //private readonly object _lockObject = new();
         private static DateTime _lastRefreshTime = DateTime.MinValue;
 
         private static readonly Lock _refreshLock = new();
         private bool logged429 = false;
 
+        private static readonly SDHttpResponseCode[] ImageDownloadErrorCodes =
+        {
+            SDHttpResponseCode.MAX_IMAGE_DOWNLOADS,
+            SDHttpResponseCode.MAX_IMAGE_DOWNLOADS_TRIAL,
+            SDHttpResponseCode.MAX_IMAGE_INVALID_URI_ERRORS
+        };
+
         public ImageDownloadServiceStatus ImageDownloadServiceStatus { get; } = new();
 
         public ImageDownloadService(
             ILogger<ImageDownloadService> logger,
-            IHttpClientFactory httpClientFactory, // Use factory for HttpClient
+            IHttpClientFactory httpClientFactory,
             IDataRefreshService dataRefreshService,
             IOptionsMonitor<Setting> settings,
             IOptionsMonitor<SDSettings> sdSettings,
@@ -55,7 +58,7 @@ namespace StreamMaster.Infrastructure.Services.Downloads
             this.imageDownloadQueue = imageDownloadQueue;
             downloadSemaphore = new SemaphoreSlim(_settings.CurrentValue.MaxConcurrentDownloads);
             sdDownloadSemaphore = new SemaphoreSlim(_settings.CurrentValue.MaxConcurrentDownloads);
-            httpClient = httpClientFactory.CreateClient(); // Use HttpClientFactory here
+            httpClient = httpClientFactory.CreateClient();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -145,7 +148,7 @@ namespace StreamMaster.Infrastructure.Services.Downloads
                     return;
                 }
 
-                using CancellationTokenSource timeoutCts = new(TimeSpan.FromSeconds(5)); // Set your desired timeout duration
+                using CancellationTokenSource timeoutCts = new(TimeSpan.FromSeconds(5));
                 using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
                 try
@@ -245,16 +248,23 @@ namespace StreamMaster.Infrastructure.Services.Downloads
 
         private bool CanProceedWithDownload()
         {
-            if (Last429Dt > DateTime.UtcNow)
+            // Check if any relevant error cooldowns are active
+            ErrorCooldownSetting? activeCooldown = sdSettings.CurrentValue.ErrorCooldowns
+                .Where(c => ImageDownloadErrorCodes.Contains((SDHttpResponseCode)c.ErrorCode) && c.CooldownUntil > DateTime.UtcNow)
+                .OrderByDescending(c => c.CooldownUntil)
+                .FirstOrDefault();
+
+            if (activeCooldown != null)
             {
                 if (!logged429)
                 {
-                    logger.LogWarning("Image downloads are temporarily suspended until {NoDownloadUntil}", sdSettings.CurrentValue.SDTooManyRequestsSuspend);
+                    logger.LogWarning("Image downloads are temporarily suspended until {CooldownUntil} due to {Reason}",
+                        activeCooldown.CooldownUntil, activeCooldown.Reason);
                     logged429 = true;
                 }
                 return false;
             }
-            Last429Dt = DateTime.MinValue;
+
             logged429 = false;
             return true;
         }
@@ -274,70 +284,50 @@ namespace StreamMaster.Infrastructure.Services.Downloads
             try
             {
                 HttpResponseMessage? response = logoInfo.IsSchedulesDirect
-    ? await GetSdImageAsync(logoInfo.Url, cancellationToken)
-    : await httpClient.GetAsync(logoInfo.Url, cancellationToken).ConfigureAwait(false);
+                    ? await GetSdImageAsync(logoInfo.Url, cancellationToken)
+                    : await httpClient.GetAsync(logoInfo.Url, cancellationToken).ConfigureAwait(false);
 
-                if (response != null)
+                if (response != null && response.IsSuccessStatusCode)
                 {
-                    if (response.StatusCode == HttpStatusCode.TooManyRequests)
+                    await using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+
+                    if (logoInfo.IsSVG)
                     {
-                        Last429Dt = DateTime.UtcNow
-                            .Date.AddDays(1)
-                            .AddMinutes(10);
-                        sdSettings.CurrentValue.SDTooManyRequestsSuspend = Last429Dt;
+                        SvgDocument svgDocument = Svg.SvgDocument.Open<Svg.SvgDocument>(stream);
+                        int width = (int)svgDocument.Width.Value;
+                        int height = (int)svgDocument.Height.Value;
 
-                        SettingsHelper.UpdateSetting(sdSettings.CurrentValue);
-                        logger.LogWarning("Max image download limit reached. No more downloads allowed until {NoDownloadUntil}", sdSettings.CurrentValue.SDTooManyRequestsSuspend);
-                        return false;
+                        if (svgDocument.ViewBox.Width != 0)
+                        {
+                            width = (int)svgDocument.ViewBox.Width;
+                        }
+
+                        if (svgDocument.ViewBox.Height != 0)
+                        {
+                            height = (int)svgDocument.ViewBox.Height;
+                        }
+
+                        using Bitmap bitmap = new(width, height);
+                        using (Graphics graphics = Graphics.FromImage(bitmap))
+                        {
+                            graphics.Clear(Color.Transparent);
+                            svgDocument.Draw(graphics);
+                        }
+
+                        bitmap.Save(logoInfo.FullPath, ImageFormat.Png);
+                        return true;
                     }
-
-                    if (response.IsSuccessStatusCode)
+                    else
                     {
-                        await using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-
-                        if (logoInfo.IsSVG)
-                        {
-                            // Save original SVG bytes to a .svg file
-                            //string svgPath = Path.ChangeExtension(logoInfo.FullPath, ".svg");
-                            //await using (FileStream svgFileStream = new(svgPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.Asynchronous))
-                            //{
-                            //    await stream.CopyToAsync(svgFileStream, cancellationToken).ConfigureAwait(false);
-                            //}
-                            //stream.Position = 0;
-
-                            SvgDocument svgDocument = Svg.SvgDocument.Open<Svg.SvgDocument>(stream);
-                            int width = (int)svgDocument.Width.Value;
-                            int height = (int)svgDocument.Height.Value;
-
-                            if (svgDocument.ViewBox.Width != 0)
-                            {
-                                width = (int)svgDocument.ViewBox.Width;
-                            }
-
-                            if (svgDocument.ViewBox.Height != 0)
-                            {
-                                height = (int)svgDocument.ViewBox.Height;
-                            }
-
-                            using Bitmap bitmap = new(width, height);
-                            using (Graphics graphics = Graphics.FromImage(bitmap))
-                            {
-                                graphics.Clear(Color.Transparent);
-                                svgDocument.Draw(graphics);
-                            }
-
-                            bitmap.Save(logoInfo.FullPath, ImageFormat.Png);
-                            return true;
-                        }
-                        else
-                        {
-                            // Save the original response content to file
-                            await using FileStream fileStream = new(logoInfo.FullPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.Asynchronous);
-                            await stream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
-                            return true;
-                        }
+                        // Save the original response content to file
+                        await using FileStream fileStream = new(logoInfo.FullPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.Asynchronous);
+                        await stream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
+                        return true;
                     }
-                    logger.LogDebug("Failed to download image from {Url} with status code {StatusCode}", logoInfo.Url, response.StatusCode);
+                }
+                else
+                {
+                    logger.LogDebug("Failed to download image from {Url} with status code {StatusCode}", logoInfo.Url, response?.StatusCode);
                 }
             }
             catch (Exception ex)
@@ -349,7 +339,42 @@ namespace StreamMaster.Infrastructure.Services.Downloads
 
         private async Task<HttpResponseMessage?> GetSdImageAsync(string uri, CancellationToken cancellationToken)
         {
-            return await schedulesDirectAPI.GetSdImageAsync(uri, cancellationToken: cancellationToken);
+            var response = await schedulesDirectAPI.GetImageAsync(uri, cancellationToken: cancellationToken);
+            if (response != null && !response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == HttpStatusCode.TooManyRequests)
+                {
+                    DateTime cooldownUntil = DateTime.UtcNow.Date.AddDays(1);
+
+                    // Find and update existing entry or add a new one
+                    var existingCooldown = sdSettings.CurrentValue.ErrorCooldowns
+                        .FirstOrDefault(c => (SDHttpResponseCode)c.ErrorCode == SDHttpResponseCode.MAX_IMAGE_DOWNLOADS);
+
+                    if (existingCooldown != null)
+                    {
+                        existingCooldown.CooldownUntil = DateTime.UtcNow.Date.AddDays(1);
+                        existingCooldown.Reason = "Too many image download requests";
+                    }
+                    else
+                    {
+                        sdSettings.CurrentValue.ErrorCooldowns.Add(new ErrorCooldownSetting
+                        {
+                            ErrorCode = (int)SDHttpResponseCode.MAX_IMAGE_DOWNLOADS,
+                            CooldownUntil = cooldownUntil,
+                            Reason = "Too many image download requests"
+                        });
+                    }
+
+                    SettingsHelper.UpdateSetting(sdSettings.CurrentValue);
+                    logger.LogWarning("Max image download limit reached. No more downloads allowed until {CooldownUntil}", cooldownUntil);
+                }
+                else
+                {
+                    var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+                    logger.LogWarning("Encoutnered a non-success status code when fetching SchedulesDirect Image. Status Code: {StatusCode}. Response: {ResponseString}", response.StatusCode, responseString);
+                }
+            }
+            return response;
         }
 
         public void Dispose()

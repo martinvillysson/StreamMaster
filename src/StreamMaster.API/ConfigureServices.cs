@@ -113,7 +113,7 @@ public static class ConfigureServices
             AllowAutoRedirect = true
         });
 
-        services.AddHttpClient(nameof(HttpService), client =>
+        services.AddHttpClient(nameof(SchedulesDirectHttpService), client =>
         {
             client.BaseAddress = new Uri("https://json.schedulesdirect.org/20141201/");
             client.Timeout = TimeSpan.FromSeconds(30);

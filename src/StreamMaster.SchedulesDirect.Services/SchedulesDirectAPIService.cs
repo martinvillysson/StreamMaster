@@ -4,14 +4,14 @@ using StreamMaster.SchedulesDirect.Domain.Models;
 
 namespace StreamMaster.SchedulesDirect.Services;
 
-public class SchedulesDirectAPIService(ISchedulesDirectRepository schedulesDirectRepository, IHttpService httpService) : ISchedulesDirectAPIService
+public class SchedulesDirectAPIService(ISchedulesDirectRepository schedulesDirectRepository, ISchedulesDirectHttpService schedulesDirectHttpService) : ISchedulesDirectAPIService
 {
-    public bool IsReady => httpService.IsReady;
+    public bool IsReady => schedulesDirectHttpService.IsReady;
 
     // Metadata-related methods
     public async Task<List<CountryData>?> GetAvailableCountriesAsync(CancellationToken cancellationToken)
     {
-        return !await httpService.ValidateTokenAsync(cancellationToken: cancellationToken)
+        return !await schedulesDirectHttpService.ValidateTokenAsync(cancellationToken: cancellationToken)
             ? null
             : await schedulesDirectRepository.GetAvailableCountriesAsync(cancellationToken);
     }
@@ -32,21 +32,21 @@ public class SchedulesDirectAPIService(ISchedulesDirectRepository schedulesDirec
 
     public async Task<int> AddLineupAsync(string lineup, CancellationToken cancellationToken)
     {
-        return !await httpService.ValidateTokenAsync(cancellationToken: cancellationToken)
+        return !await schedulesDirectHttpService.ValidateTokenAsync(cancellationToken: cancellationToken)
             ? 0
             : await schedulesDirectRepository.AddLineupAsync(lineup, cancellationToken);
     }
 
     public async Task<int> RemoveLineupAsync(string lineup, CancellationToken cancellationToken)
     {
-        return !await httpService.ValidateTokenAsync(cancellationToken: cancellationToken)
+        return !await schedulesDirectHttpService.ValidateTokenAsync(cancellationToken: cancellationToken)
             ? -1
             : await schedulesDirectRepository.RemoveLineupAsync(lineup, cancellationToken);
     }
 
     public async Task<bool> UpdateHeadEndAsync(string lineup, bool subscribed, CancellationToken cancellationToken)
     {
-        return await httpService.ValidateTokenAsync(cancellationToken: cancellationToken)
+        return await schedulesDirectHttpService.ValidateTokenAsync(cancellationToken: cancellationToken)
 && await schedulesDirectRepository.UpdateHeadEndAsync(lineup, subscribed, cancellationToken);
     }
 
@@ -75,9 +75,9 @@ public class SchedulesDirectAPIService(ISchedulesDirectRepository schedulesDirec
         return schedulesDirectRepository.GetLineupResultAsync(lineup, cancellationToken);
     }
 
-    public Task<HttpResponseMessage?> GetSdImageAsync(string uri, CancellationToken cancellationToken)
+    public Task<HttpResponseMessage?> GetImageAsync(string uri, CancellationToken cancellationToken)
     {
-        return schedulesDirectRepository.GetSdImageAsync(uri, cancellationToken);
+        return schedulesDirectRepository.GetImageAsync(uri, cancellationToken);
     }
 
     public Task<List<ProgramMetadata>?> GetArtworkAsync(string[] programIds, CancellationToken cancellationToken)
@@ -93,16 +93,16 @@ public class SchedulesDirectAPIService(ISchedulesDirectRepository schedulesDirec
     // Token-related methods
     public Task RefreshTokenAsync(CancellationToken cancellationToken)
     {
-        return httpService.RefreshTokenAsync(cancellationToken);
+        return schedulesDirectHttpService.RefreshTokenAsync(cancellationToken);
     }
 
     public Task<bool> ValidateTokenAsync(bool forceReset = false, CancellationToken cancellationToken = default)
     {
-        return httpService.ValidateTokenAsync(forceReset, cancellationToken);
+        return schedulesDirectHttpService.ValidateTokenAsync(forceReset, cancellationToken);
     }
 
     public void ClearToken()
     {
-        httpService.ClearToken();
+        schedulesDirectHttpService.ClearToken();
     }
 }
